@@ -17,7 +17,8 @@
 #include "H09R9_gpio.h"
 #include "H09R9_dma.h"
 #include "H09R9_i2c.h"
-
+#include "H09R9_inputs.h"
+#include "H09R9_eeprom.h"
 /* Exported definitions -------------------------------------------------------*/
 
 #define	modulePN		_H09R9
@@ -154,7 +155,8 @@ Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout);
 	|																APIs	 																 	|
    -----------------------------------------------------------------------
 */
-
+void SetupPortForRemoteBootloaderUpdate(uint8_t port);
+void remoteBootloaderUpdate(uint8_t src,uint8_t dst,uint8_t inport,uint8_t outport);
 
 
 
