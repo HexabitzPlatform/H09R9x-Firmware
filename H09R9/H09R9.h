@@ -49,17 +49,15 @@
 #define _Usart3 1
 #define _Usart4 1
 #define _Usart5 1
-#define _Usart6	1
-
+#define _Usart6 1
 
 /* Port-UART mapping */
-#define P1uart &huart6
+#define P1uart &huart4
 #define P2uart &huart2
-#define P3uart &huart3
-#define P4uart &huart1
-#define P5uart &huart5
-#define P6uart &huart4
-
+#define P3uart &huart6
+#define P4uart &huart3
+#define P5uart &huart1
+#define P6uart &huart5
 
 /* Port Definitions */
 #define	USART1_TX_PIN		GPIO_PIN_9
@@ -74,8 +72,8 @@
 #define	USART2_RX_PORT		GPIOA
 #define	USART2_AF			GPIO_AF1_USART2
 
-#define	USART3_TX_PIN		GPIO_PIN_10
-#define	USART3_RX_PIN		GPIO_PIN_11
+#define	USART3_TX_PIN		GPIO_PIN_8
+#define	USART3_RX_PIN		GPIO_PIN_9
 #define	USART3_TX_PORT		GPIOB
 #define	USART3_RX_PORT		GPIOB
 #define	USART3_AF			GPIO_AF4_USART3
@@ -90,20 +88,20 @@
 #define	USART5_RX_PIN		GPIO_PIN_2
 #define	USART5_TX_PORT		GPIOD
 #define	USART5_RX_PORT		GPIOD
-#define	USART5_AF			GPIO_AF3_USART5
+#define	USART5_AF			GPIO_AF4_USART5
 
-#define	USART6_TX_PIN		GPIO_PIN_8
-#define	USART6_RX_PIN		GPIO_PIN_9
-#define	USART6_TX_PORT		GPIOB
-#define	USART6_RX_PORT		GPIOB
-#define	USART6_AF			GPIO_AF8_USART6
+#define	USART6_TX_PIN		GPIO_PIN_4
+#define	USART6_RX_PIN		GPIO_PIN_5
+#define	USART6_TX_PORT		GPIOA
+#define	USART6_RX_PORT		GPIOA
+#define	USART6_AF			GPIO_AF5_USART6
 
 
 /* Module-specific Definitions */
 
 /* Indicator LED */
-#define _IND_LED_PORT			GPIOA
-#define _IND_LED_PIN			GPIO_PIN_5
+#define _IND_LED_PORT										GPIOB
+#define _IND_LED_PIN										GPIO_PIN_0
 
 #define NUM_MODULE_PARAMS		1
 
