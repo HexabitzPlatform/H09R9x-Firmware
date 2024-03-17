@@ -1,0 +1,6 @@
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\portable\MemMang\heap_4.c:415:13:prvInsertBlockIntoFreeList	7
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\portable\MemMang\heap_4.c:151:7:pvPortMalloc	13
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\portable\MemMang\heap_4.c:301:6:vPortFree	4
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\portable\MemMang\heap_4.c:349:8:xPortGetFreeHeapSize	1
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\portable\MemMang\heap_4.c:355:8:xPortGetMinimumEverFreeHeapSize	1
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\portable\MemMang\heap_4.c:361:6:vPortInitialiseBlocks	1

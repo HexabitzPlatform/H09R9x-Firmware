@@ -1,0 +1,12 @@
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:607:6:vEventGroupClearBitsCallback	1
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:138:20:xEventGroupCreate	2
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:274:13:xEventGroupWaitBits	13
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:422:13:xEventGroupClearBits	1
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:451:13:xEventGroupClearBitsFromISR	1
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:464:13:xEventGroupGetBitsFromISR	1
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:480:13:xEventGroupSetBits	7
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:158:13:xEventGroupSync	6
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:599:6:vEventGroupSetBitsCallback	1
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:574:6:vEventGroupDelete	3
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:650:13:xEventGroupSetBitsFromISR	1
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\event_groups.c:665:14:uxEventGroupGetNumber	2

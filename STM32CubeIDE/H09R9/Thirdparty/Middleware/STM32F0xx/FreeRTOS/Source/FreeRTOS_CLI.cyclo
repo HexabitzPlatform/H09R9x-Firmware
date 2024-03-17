@@ -1,0 +1,5 @@
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\FreeRTOS_CLI.c:247:22:prvHelpCommand	16
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\FreeRTOS_CLI.c:69:15:FreeRTOS_CLIRegisterCommand	2
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\FreeRTOS_CLI.c:110:15:FreeRTOS_CLIProcessCommand	15
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\FreeRTOS_CLI.c:185:9:FreeRTOS_CLIGetOutputBuffer	1
+..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\FreeRTOS_CLI.c:191:15:FreeRTOS_CLIGetParameter	13

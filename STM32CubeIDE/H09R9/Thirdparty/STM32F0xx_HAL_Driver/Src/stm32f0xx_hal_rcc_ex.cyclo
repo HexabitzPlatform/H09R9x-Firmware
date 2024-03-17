@@ -1,0 +1,7 @@
+..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_rcc_ex.c:166:19:HAL_RCCEx_PeriphCLKConfig	13
+..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_rcc_ex.c:311:6:HAL_RCCEx_GetPeriphCLKConfig	1
+..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_rcc_ex.c:372:10:HAL_RCCEx_GetPeriphCLKFreq	31
+..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_rcc_ex.c:627:6:HAL_RCCEx_CRSConfig	1
+..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_rcc_ex.c:689:6:HAL_RCCEx_CRSSoftwareSynchronizationGenerate	1
+..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_rcc_ex.c:700:6:HAL_RCCEx_CRSGetSynchronizationInfo	1
+..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_rcc_ex.c:735:10:HAL_RCCEx_CRSWaitSynchronization	11

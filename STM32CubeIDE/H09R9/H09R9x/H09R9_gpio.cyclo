@@ -1,0 +1,5 @@
+..\..\H09R9x\H09R9_gpio.c:22:6:GPIO_Init	1
+..\..\H09R9x\H09R9_gpio.c:35:6:IND_LED_Init	1
+..\..\H09R9x\H09R9_gpio.c:47:6:SENSOR_GPIO_Init	1
+..\..\H09R9x\H09R9_gpio.c:113:12:GetPortGPIOs	7
+..\..\H09R9x\H09R9_gpio.c:63:9:IsFactoryReset	3

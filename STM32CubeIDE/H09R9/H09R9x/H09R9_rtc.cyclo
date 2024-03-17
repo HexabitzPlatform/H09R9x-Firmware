@@ -1,0 +1,4 @@
+..\..\H09R9x\H09R9_rtc.c:82:12:RTC_CalendarConfig	5
+..\..\H09R9x\H09R9_rtc.c:30:12:RTC_Init	5
+..\..\H09R9x\H09R9_rtc.c:137:12:BOS_CalendarConfig	5
+..\..\H09R9x\H09R9_rtc.c:192:6:GetTimeDate	1
