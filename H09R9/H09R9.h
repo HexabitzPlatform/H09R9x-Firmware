@@ -25,6 +25,7 @@
 #include "H09R9_dma.h"
 #include "H09R9_inputs.h"
 #include "H09R9_eeprom.h"
+#include "H09R9_i2c.h"
 /* Exported definitions -------------------------------------------------------*/
 
 #define	modulePN		_H09R9
@@ -88,13 +89,13 @@
 #define	USART5_RX_PIN		GPIO_PIN_2
 #define	USART5_TX_PORT		GPIOD
 #define	USART5_RX_PORT		GPIOD
-#define	USART5_AF			GPIO_AF4_USART5
+#define	USART5_AF			GPIO_AF3_USART5
 
 #define	USART6_TX_PIN		GPIO_PIN_4
 #define	USART6_RX_PIN		GPIO_PIN_5
 #define	USART6_TX_PORT		GPIOA
 #define	USART6_RX_PORT		GPIOA
-#define	USART6_AF			GPIO_AF5_USART6
+#define	USART6_AF			GPIO_AF4_USART6
 
 
 /* Module-specific Definitions */
@@ -113,21 +114,25 @@
 
 
 /* H09R9 Module special parameters */
-
+typedef enum
+{
+  H09R9_OK = 0,
+  H09R9_ERR_UnknownMessage,
+  H09R9_ERR_TEMPRATURE,
+  H09R9_ERR_BUSY,
+  H09R9_ERR_TIMEOUT,
+  H09R9_ERR_IO,
+  H09R9_ERR_TERMINATED,
+  H09R9_ERR_WrongParams,
+  H09R9_ERROR = 25
+} Module_Status;
 
 /* Module EEPROM Variables */
 // Module Addressing Space 500 - 599
 #define _EE_MODULE							500		
 
 /* EXG Module_Status Type Definition */
-typedef enum {
-	H09R9_OK =0,
-	H09R9_ERR_UnknownMessage,
-	H09R9_ERR_WrongParams,
-	H09R9_ERROR =255
-} Module_Status;
-
-
+typedef unsigned char uchar;
 
 
 /* Export UART variables */
@@ -155,7 +160,17 @@ extern void ExecuteMonitor(void);
 
 void SetupPortForRemoteBootloaderUpdate(uint8_t port);
 void remoteBootloaderUpdate(uint8_t src,uint8_t dst,uint8_t inport,uint8_t outport);
-
+void Error_Handler(void);
+void SENSOR_COEFFICIENTS_Init(void);
+void stopStreamMems(void);
+float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3);
+void SampleTemperature(float *temp);
+void SampleTemperatureBuf(float *buffer);
+void SampleTemperatureToPort(uint8_t port,uint8_t module);
+void SampleTemperatureToString(char *cstring, size_t maxLen);
+Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t period, uint32_t timeout);
+Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t period, uint32_t timeout);
+Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout);
 
 
 /* -----------------------------------------------------------------------

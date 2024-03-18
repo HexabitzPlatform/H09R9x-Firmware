@@ -16,7 +16,7 @@
 //initialize i2c
 void MX_I2C_Init(void);
 void MX_I2C1_Init(void);
-
+extern void Error_Handler(void);
 
 I2C_HandleTypeDef hi2c2;
 
