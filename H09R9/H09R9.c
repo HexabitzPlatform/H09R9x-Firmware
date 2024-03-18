@@ -51,8 +51,7 @@ extern I2C_HandleTypeDef hi2c2;
 
 float H09R9_temperature;
 
-#define MIN_MEMS_PERIOD_MS				100
-#define MAX_MEMS_TIMEOUT_MS				0xFFFFFFFF
+
 typedef void (*SampleMemsToPort)(uint8_t, uint8_t);
 typedef void (*SampleMemsToString)(char *, size_t);
 typedef void (*SampleMemsToBuffer)(float *buffer);
@@ -81,9 +80,6 @@ uint8_t h_TSenMax, l_TSenMax,h_TSenMin,l_TSenMin;
 uint8_t h_TC1, l_TC1,h_TC2,l_TC2;
 uint8_t h_RT1, l_RT1,h_RT2,l_RT2;
 /* Private function prototypes -----------------------------------------------*/
-void ExecuteMonitor(void);
-void FLASH_Page_Eras(uint32_t Addr );
-
 
 /* Create CLI commands --------------------------------------------------------*/
 
@@ -95,6 +91,11 @@ void FLASH_Page_Eras(uint32_t Addr );
  |						    	 Private Functions						 |
  -------------------------------------------------------------------------
  */
+void ExecuteMonitor(void);
+void FLASH_Page_Eras(uint32_t Addr );
+void SampleTemperatureToString(char *cstring, size_t maxLen);
+void SampleTemperatureBuf(float *buffer);
+Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t period, uint32_t timeout);
 
 /**
  * @brief  System Clock Configuration
@@ -916,20 +917,20 @@ void SampleTemperatureToPort(uint8_t port,uint8_t module)
 
 
 	if(module == myID){
-		temp[0] =*((__IO uint8_t* )(&buffer[0]) + 3);
-		temp[1] =*((__IO uint8_t* )(&buffer[0]) + 2);
-		temp[2] =*((__IO uint8_t* )(&buffer[0]) + 1);
-		temp[3] =*((__IO uint8_t* )(&buffer[0]) + 0);
 
+		temp[0] =(uint8_t)((*(uint32_t *) &buffer[0]) >> 0);
+		temp[1] =(uint8_t)((*(uint32_t *) &buffer[0]) >> 8);
+		temp[2] =(uint8_t)((*(uint32_t *) &buffer[0]) >> 16);
+		temp[3] =(uint8_t)((*(uint32_t *) &buffer[0]) >> 24);
 
 		writePxITMutex(port,(char* )&temp[0],4 * sizeof(uint8_t),10);
 	}
 	else{
 		messageParams[0] =port;
-		messageParams[1] =*((__IO uint8_t* )(&buffer[0]) + 3);
-		messageParams[2] =*((__IO uint8_t* )(&buffer[0]) + 2);
-		messageParams[3] =*((__IO uint8_t* )(&buffer[0]) + 1);
-		messageParams[4] =*((__IO uint8_t* )(&buffer[0]) + 0);
+		messageParams[1] =(uint8_t)((*(uint32_t *) &buffer[0]) >> 0);
+		messageParams[2] =(uint8_t)((*(uint32_t *) &buffer[0]) >> 8);
+		messageParams[3] =(uint8_t)((*(uint32_t *) &buffer[0]) >> 16);
+		messageParams[4] =(uint8_t)((*(uint32_t *) &buffer[0]) >> 24);
 
 		SendMessageToModule(module,CODE_PORT_FORWARD,sizeof(float)+1);
 	}

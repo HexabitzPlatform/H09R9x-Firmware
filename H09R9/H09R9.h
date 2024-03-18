@@ -99,7 +99,8 @@
 
 
 /* Module-specific Definitions */
-
+#define MIN_MEMS_PERIOD_MS				100
+#define MAX_MEMS_TIMEOUT_MS				0xFFFFFFFF
 /* Indicator LED */
 #define _IND_LED_PORT										GPIOB
 #define _IND_LED_PIN										GPIO_PIN_0
@@ -165,10 +166,7 @@ void SENSOR_COEFFICIENTS_Init(void);
 void stopStreamMems(void);
 float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3);
 void SampleTemperature(float *temp);
-void SampleTemperatureBuf(float *buffer);
 void SampleTemperatureToPort(uint8_t port,uint8_t module);
-void SampleTemperatureToString(char *cstring, size_t maxLen);
-Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t period, uint32_t timeout);
 Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t period, uint32_t timeout);
 Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout);
 
