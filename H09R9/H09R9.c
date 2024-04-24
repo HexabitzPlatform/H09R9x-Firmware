@@ -383,6 +383,7 @@ void Module_Peripheral_Init(void){
 		}
 	}
 
+	MX_I2C2_Init();
 	/* Create module special task (if needed) */
 //	if(EXGTaskHandle == NULL)
 //		xTaskCreate(EXGTask,(const char* ) "EXGTask",configMINIMAL_STACK_SIZE,NULL,osPriorityNormal - osPriorityIdle,&EXGTaskHandle);
