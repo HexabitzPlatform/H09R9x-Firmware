@@ -56,9 +56,9 @@
 #define P1uart &huart4
 #define P2uart &huart2
 #define P3uart &huart6
-#define P4uart &huart3
-#define P5uart &huart1
-#define P6uart &huart5
+#define P4uart &huart1
+#define P5uart &huart5
+#define P6uart &huart3
 
 /* Port Definitions */
 #define	USART1_TX_PIN		GPIO_PIN_9
@@ -107,6 +107,7 @@
 
 #define NUM_MODULE_PARAMS		1
 #define SAMPLE_TEM              0
+#define SAMPLE_TO_PORT          1
 /* H09R9 Module Special Timer */
 
 
@@ -158,14 +159,14 @@ extern void ExecuteMonitor(void);
 /* -----------------------------------------------------------------------
  */
 Module_Status SampleTemperature(float *temp);
-
+Module_Status SampleTemperatureToPort (uint8_t port,uint8_t module);
 void SetupPortForRemoteBootloaderUpdate(uint8_t port);
 void remoteBootloaderUpdate(uint8_t src,uint8_t dst,uint8_t inport,uint8_t outport);
 void Error_Handler(void);
 void SENSOR_COEFFICIENTS_Init(void);
 void stopStreamMems(void);
 float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3);
-void SampleTemperatureToPort(uint8_t port,uint8_t module);
+//void SampleTemperatureToPort(uint8_t port,uint8_t module);
 Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t period, uint32_t timeout);
 Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout);
 

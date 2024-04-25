@@ -32,7 +32,7 @@ extern FLASH_ProcessTypeDef pFlash;
 extern uint8_t numOfRecordedSnippets;
 
 /* Exported functions */
-
+uint8_t port1, module1;
 
 typedef unsigned char uchar;
 /* Module exported parameters ------------------------------------------------*/
@@ -41,6 +41,7 @@ TaskHandle_t EXGTaskHandle = NULL;
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 void EXGTask(void *argument);
+void ExportToPort(uint8_t port,uint8_t module);
 void Measure_temp_init(void);
 float Measure_temp(void);
 float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3);
@@ -460,7 +461,10 @@ void EXGTask(void *argument) {
 		case SAMPLE_TEM:
 			GetSample(&Sample);
 			break;
+		case SAMPLE_TO_PORT:
 
+			ExportToPort(port1, module1);
+			break;
 
 		default:
 			osDelay(10);
@@ -592,7 +596,7 @@ static Module_Status StreamMemsToCLI(uint32_t period, uint32_t timeout, SampleMe
 		function((char *)pcOutputString, 100);
 
 
-		writePxMutex(PcPort, (char *)pcOutputString, strlen((char *)pcOutputString), cmd500ms, HAL_MAX_DELAY);
+		writePxMutex(6, (char *)pcOutputString, strlen((char *)pcOutputString), cmd500ms, HAL_MAX_DELAY);
 		if (PollingSleepCLISafe(period) != H09R9_OK)
 			break;
 	}
@@ -927,9 +931,18 @@ Module_Status SampleTemperature(float *temp) {
 void SampleTemperatureBuf(float *buffer)
 {
 //	SampleTemperature(buffer);
-}
+	}
 
-void SampleTemperatureToPort(uint8_t port,uint8_t module)
+
+Module_Status SampleTemperatureToPort (uint8_t port,uint8_t module){
+	Module_Status status = H09R9_OK;
+	tofMode=SAMPLE_TO_PORT;
+	port1 = port;
+	module1 =module;
+	return status;
+
+}
+void ExportToPort(uint8_t port,uint8_t module)
 {
 	float buffer[1];
 	static uint8_t temp[4];
@@ -972,7 +985,7 @@ Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t period, uint32_t
 
 Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t period, uint32_t timeout)
 {
-	return StreamMemsToPort(port, module, period, timeout, SampleTemperatureToPort);
+	return StreamMemsToPort(port, module, period, timeout, ExportToPort);
 }
 
 Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout)
