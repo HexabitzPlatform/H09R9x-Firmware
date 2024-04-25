@@ -37,9 +37,10 @@ extern uint8_t numOfRecordedSnippets;
 typedef unsigned char uchar;
 /* Module exported parameters ------------------------------------------------*/
 module_param_t modParam[NUM_MODULE_PARAMS] ={{.paramPtr = NULL, .paramFormat =FMT_FLOAT, .paramName =""}};
-
+TaskHandle_t EXGTaskHandle = NULL;
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+void EXGTask(void *argument);
 void Measure_temp_init(void);
 float Measure_temp(void);
 float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3);
@@ -386,8 +387,10 @@ void Module_Peripheral_Init(void){
 	MX_I2C2_Init();
 	/* Create module special task (if needed) */
 //	if(EXGTaskHandle == NULL)
-//		xTaskCreate(EXGTask,(const char* ) "EXGTask",configMINIMAL_STACK_SIZE,NULL,osPriorityNormal - osPriorityIdle,&EXGTaskHandle);
-
+		xTaskCreate(EXGTask,(const char* ) "EXGTask",configMINIMAL_STACK_SIZE,NULL,osPriorityNormal - osPriorityIdle,&EXGTaskHandle);
+//	xTaskCreate(ToFTask, (const char*) "ToFTask",
+//			(2 * configMINIMAL_STACK_SIZE), NULL,
+//			osPriorityNormal - osPriorityIdle, &ToFHandle);
 }
 
 /*-----------------------------------------------------------*/
@@ -435,29 +438,29 @@ void RegisterModuleCLICommands(void){
 }
 
 /*-----------------------------------------------------------*/
-
+int f;
 ///* Module special task function (if needed) */
-//void EXGTask(void *argument) {
-//
-//	uint8_t cases; // Test variable.
-//
-//	/* Infinite loop */
-//	for (;;) {
-//		/*  */
-//
-//		switch (cases) {
-//
-//
-//
-//	default:
-//		osDelay(10);
-//		break;
-//		}
-//
-//		taskYIELD();
-//	}
-//
-//}
+void EXGTask(void *argument) {
+
+	uint8_t cases; // Test variable.
+
+	/* Infinite loop */
+	for (;;) {
+		/*  */
+f++;
+		switch (cases) {
+
+
+
+	default:
+		osDelay(10);
+		break;
+		}
+
+		taskYIELD();
+	}
+
+}
 
 
 /*-----------------------------------------------------------*/
