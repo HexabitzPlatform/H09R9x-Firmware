@@ -108,6 +108,7 @@
 #define NUM_MODULE_PARAMS		1
 #define SAMPLE_TEM              0
 #define SAMPLE_TO_PORT          1
+#define STREAM_TO_PORT          2
 /* H09R9 Module Special Timer */
 
 
@@ -158,6 +159,7 @@ extern void ExecuteMonitor(void);
  |								  APIs							          ||
 /* -----------------------------------------------------------------------
  */
+Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout);
 Module_Status SampleTemperature(float *temp);
 Module_Status SampleTemperatureToPort (uint8_t port,uint8_t module);
 void SetupPortForRemoteBootloaderUpdate(uint8_t port);
@@ -167,7 +169,7 @@ void SENSOR_COEFFICIENTS_Init(void);
 void stopStreamMems(void);
 float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3);
 //void SampleTemperatureToPort(uint8_t port,uint8_t module);
-Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t period, uint32_t timeout);
+
 Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout);
 
 

@@ -36,14 +36,15 @@ extern int16_t TSenMax_Value, TSenMin_Value;
 int r;
 /* User Task */
 void UserTask(void *argument) {
-
+	StreamTemperatureToPort(5, 0, 10, 10000);
 	// put your code here, to run repeatedly.
 	while (1) {
-	SampleTemperatureToPort(5, 0);
+
+//	SampleTemperatureToPort(5, 0);
 //		ExportToPort(5, 0);
 //		StreamTemperatureToCLI(100,10000);
 //		HAL_UART_Transmit(&huart6, 10, 1, 1000);
-		SampleTemperature(&teqmp);
+//		SampleTemperature(&teqmp);
 		v++;
 	}
 }

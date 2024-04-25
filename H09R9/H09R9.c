@@ -33,7 +33,8 @@ extern uint8_t numOfRecordedSnippets;
 
 /* Exported functions */
 uint8_t port1, module1;
-
+uint8_t port2 ,module2;
+uint32_t Numofsamples2 ,timeout2;
 typedef unsigned char uchar;
 /* Module exported parameters ------------------------------------------------*/
 module_param_t modParam[NUM_MODULE_PARAMS] ={{.paramPtr = NULL, .paramFormat =FMT_FLOAT, .paramName =""}};
@@ -94,6 +95,7 @@ uint8_t h_RT1, l_RT1,h_RT2,l_RT2;
  -------------------------------------------------------------------------
  */
 void GetSample(float *temp);
+static Module_Status StreamMemsToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout, SampleMemsToPort function);
 void ExecuteMonitor(void);
 void FLASH_Page_Eras(uint32_t Addr );
 void SampleTemperatureToString(char *cstring, size_t maxLen);
@@ -465,7 +467,10 @@ void EXGTask(void *argument) {
 
 			ExportToPort(port1, module1);
 			break;
+		case STREAM_TO_PORT:
 
+			StreamMemsToPort(port2, module2, Numofsamples2, timeout2, ExportToPort);
+			break;
 		default:
 			osDelay(10);
 			break;
@@ -545,11 +550,10 @@ static Module_Status StreamMemsToBuf( float *buffer, uint32_t period, uint32_t t
 	return status;
 }
 
-static Module_Status StreamMemsToPort(uint8_t port, uint8_t module, uint32_t period, uint32_t timeout, SampleMemsToPort function)
+static Module_Status StreamMemsToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout, SampleMemsToPort function)
 {
 	Module_Status status = H09R9_OK;
-
-
+	uint32_t period = timeout / Numofsamples;
 	if (period < MIN_MEMS_PERIOD_MS)
 		return H09R9_ERR_WrongParams;
 	if (port == 0)
@@ -572,6 +576,7 @@ static Module_Status StreamMemsToPort(uint8_t port, uint8_t module, uint32_t per
 			break;
 		}
 	}
+	tofMode=20;
 	return status;
 }
 
@@ -983,9 +988,16 @@ Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t period, uint32_t
 	return StreamMemsToBuf(buffer, period, timeout, SampleTemperatureBuf);
 }
 
-Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t period, uint32_t timeout)
+Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout)
 {
-	return StreamMemsToPort(port, module, period, timeout, ExportToPort);
+	Module_Status status = H09R9_OK;
+	tofMode=STREAM_TO_PORT;
+	port2 = port ;
+	module2 =module;
+	Numofsamples2=Numofsamples;
+	timeout2=timeout;
+	return status;
+
 }
 
 Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout)
