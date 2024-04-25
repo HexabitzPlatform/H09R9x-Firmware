@@ -64,7 +64,7 @@ static bool stopStream = false;
 /* Private variables ---------------------------------------------------------*/
 
 static const uint8_t TSD305_ADDR=0x00<<1; // 0b0000000X
-
+uint8_t tofMode ;
 uint8_t SensorAddresses;
 uint8_t ADC_Adress=0xAF;
 uint8_t buf1[3]={0x00};
@@ -92,6 +92,7 @@ uint8_t h_RT1, l_RT1,h_RT2,l_RT2;
  |						    	 Private Functions						 |
  -------------------------------------------------------------------------
  */
+void GetSample(float *temp);
 void ExecuteMonitor(void);
 void FLASH_Page_Eras(uint32_t Addr );
 void SampleTemperatureToString(char *cstring, size_t maxLen);
@@ -386,11 +387,8 @@ void Module_Peripheral_Init(void){
 
 	MX_I2C2_Init();
 	/* Create module special task (if needed) */
-//	if(EXGTaskHandle == NULL)
 		xTaskCreate(EXGTask,(const char* ) "EXGTask",configMINIMAL_STACK_SIZE,NULL,osPriorityNormal - osPriorityIdle,&EXGTaskHandle);
-//	xTaskCreate(ToFTask, (const char*) "ToFTask",
-//			(2 * configMINIMAL_STACK_SIZE), NULL,
-//			osPriorityNormal - osPriorityIdle, &ToFHandle);
+
 }
 
 /*-----------------------------------------------------------*/
@@ -439,22 +437,34 @@ void RegisterModuleCLICommands(void){
 
 /*-----------------------------------------------------------*/
 int f;
+extern float teqmp;
+int g;
+float Sample ;
 ///* Module special task function (if needed) */
 void EXGTask(void *argument) {
 
-	uint8_t cases; // Test variable.
+	SENSOR_COEFFICIENTS_Init();
 
+	while (0 == TSenMax_Value) {
+		IND_ON();
+		HAL_Delay(200);
+		IND_OFF();
+		HAL_Delay(200);
+		g++;
+	}
 	/* Infinite loop */
 	for (;;) {
 		/*  */
-f++;
-		switch (cases) {
+		f++;
+		switch (tofMode) {
+		case SAMPLE_TEM:
+			GetSample(&Sample);
+			break;
 
 
-
-	default:
-		osDelay(10);
-		break;
+		default:
+			osDelay(10);
+			break;
 		}
 
 		taskYIELD();
@@ -868,7 +878,7 @@ float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3)
     return output;
 }
 
-void SampleTemperature(float *temp){
+void GetSample(float *temp){
 
 	HAL_I2C_IsDeviceReady(&hi2c2,TSD305_ADDR,1,10);
 	HAL_Delay(Delay);
@@ -907,9 +917,16 @@ void SampleTemperature(float *temp){
 	*temp=k4Obj*ADCCompTC*ADCCompTC*ADCCompTC*ADCCompTC+k3Obj*ADCCompTC*ADCCompTC*ADCCompTC+k2Obj*ADCCompTC*ADCCompTC+k1Obj*ADCCompTC+k0Obj;
 }
 
+Module_Status SampleTemperature(float *temp) {
+	Module_Status status = H09R9_OK;
+	tofMode=SAMPLE_TEM;
+	*temp=Sample;
+	return status;
+}
+
 void SampleTemperatureBuf(float *buffer)
 {
-	SampleTemperature(buffer);
+//	SampleTemperature(buffer);
 }
 
 void SampleTemperatureToPort(uint8_t port,uint8_t module)

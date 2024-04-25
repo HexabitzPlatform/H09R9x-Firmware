@@ -102,12 +102,11 @@
 #define MIN_MEMS_PERIOD_MS				100
 #define MAX_MEMS_TIMEOUT_MS				0xFFFFFFFF
 /* Indicator LED */
-#define _IND_LED_PORT										GPIOB
-#define _IND_LED_PIN										GPIO_PIN_0
+#define _IND_LED_PORT		GPIOB
+#define _IND_LED_PIN		GPIO_PIN_0
 
 #define NUM_MODULE_PARAMS		1
-
-
+#define SAMPLE_TEM              0
 /* H09R9 Module Special Timer */
 
 
@@ -158,6 +157,7 @@ extern void ExecuteMonitor(void);
  |								  APIs							          ||
 /* -----------------------------------------------------------------------
  */
+Module_Status SampleTemperature(float *temp);
 
 void SetupPortForRemoteBootloaderUpdate(uint8_t port);
 void remoteBootloaderUpdate(uint8_t src,uint8_t dst,uint8_t inport,uint8_t outport);
@@ -165,7 +165,6 @@ void Error_Handler(void);
 void SENSOR_COEFFICIENTS_Init(void);
 void stopStreamMems(void);
 float bytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3);
-void SampleTemperature(float *temp);
 void SampleTemperatureToPort(uint8_t port,uint8_t module);
 Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t period, uint32_t timeout);
 Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout);
