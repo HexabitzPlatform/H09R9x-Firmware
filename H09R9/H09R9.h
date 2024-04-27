@@ -109,6 +109,7 @@
 #define SAMPLE_TEM              0
 #define SAMPLE_TO_PORT          1
 #define STREAM_TO_PORT          2
+#define STREAM_TO_Terminal      3
 /* H09R9 Module Special Timer */
 
 
@@ -159,6 +160,7 @@ extern void ExecuteMonitor(void);
  |								  APIs							          ||
 /* -----------------------------------------------------------------------
  */
+Module_Status StreamTemperatureToTerminal(uint32_t Numofsamples, uint32_t timeout,uint8_t port);
 Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout);
 Module_Status SampleTemperature(float *temp);
 Module_Status SampleTemperatureToPort (uint8_t port,uint8_t module);

@@ -35,6 +35,8 @@ extern uint8_t numOfRecordedSnippets;
 uint8_t port1, module1;
 uint8_t port2 ,module2;
 uint32_t Numofsamples2 ,timeout2;
+uint8_t port3 ;
+uint32_t Numofsamples3 ,timeout3;
 typedef unsigned char uchar;
 /* Module exported parameters ------------------------------------------------*/
 module_param_t modParam[NUM_MODULE_PARAMS] ={{.paramPtr = NULL, .paramFormat =FMT_FLOAT, .paramName =""}};
@@ -94,6 +96,7 @@ uint8_t h_RT1, l_RT1,h_RT2,l_RT2;
  |						    	 Private Functions						 |
  -------------------------------------------------------------------------
  */
+static Module_Status StreamMemsToTerminal(uint32_t Numofsamples, uint32_t timeout,uint8_t Port, SampleMemsToString function);
 void GetSample(float *temp);
 static Module_Status StreamMemsToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout, SampleMemsToPort function);
 void ExecuteMonitor(void);
@@ -441,7 +444,7 @@ void RegisterModuleCLICommands(void){
 /*-----------------------------------------------------------*/
 int f;
 extern float teqmp;
-int g;
+int g,j,l;
 float Sample ;
 ///* Module special task function (if needed) */
 void EXGTask(void *argument) {
@@ -453,14 +456,15 @@ void EXGTask(void *argument) {
 		HAL_Delay(200);
 		IND_OFF();
 		HAL_Delay(200);
-		g++;
 	}
 	/* Infinite loop */
 	for (;;) {
 		/*  */
 		f++;
+
 		switch (tofMode) {
 		case SAMPLE_TEM:
+			l++;
 			GetSample(&Sample);
 			break;
 		case SAMPLE_TO_PORT:
@@ -471,6 +475,11 @@ void EXGTask(void *argument) {
 
 			StreamMemsToPort(port2, module2, Numofsamples2, timeout2, ExportToPort);
 			break;
+		case STREAM_TO_Terminal:
+g++;
+			StreamMemsToTerminal(Numofsamples3, timeout3,port3, SampleTemperatureToString);
+
+				break;
 		default:
 			osDelay(10);
 			break;
@@ -611,6 +620,37 @@ static Module_Status StreamMemsToCLI(uint32_t period, uint32_t timeout, SampleMe
 	return status;
 }
 
+static Module_Status StreamMemsToTerminal(uint32_t Numofsamples, uint32_t timeout,uint8_t Port, SampleMemsToString function)
+{
+	Module_Status status = H09R9_OK;
+	int8_t *pcOutputString = NULL;
+	uint32_t period = timeout / Numofsamples;
+	if (period < MIN_MEMS_PERIOD_MS)
+		return H09R9_ERR_WrongParams;
+
+	// TODO: Check if CLI is enable or not
+
+	if (period > timeout)
+		timeout = period;
+
+	long numTimes = timeout / period;
+	stopStream = false;
+
+	while ((numTimes-- > 0) || (timeout >= MAX_MEMS_TIMEOUT_MS)) {
+		pcOutputString = FreeRTOS_CLIGetOutputBuffer();
+		function((char *)pcOutputString, 100);
+
+
+		writePxMutex(Port, (char *)pcOutputString, strlen((char *)pcOutputString), cmd500ms, HAL_MAX_DELAY);
+		if (PollingSleepCLISafe(period) != H09R9_OK)
+			break;
+	}
+
+	memset((char *) pcOutputString, 0, configCOMMAND_INT_MAX_OUTPUT_SIZE);
+  sprintf((char *)pcOutputString, "\r\n");
+	tofMode=20;
+	return status;
+}
 
 void SENSOR_COEFFICIENTS_Init(void){
 
@@ -952,7 +992,7 @@ void ExportToPort(uint8_t port,uint8_t module)
 	float buffer[1];
 	static uint8_t temp[4];
 
-	SampleTemperatureBuf(buffer);
+	GetSample(buffer);
 
 
 	if(module == myID){
@@ -978,7 +1018,7 @@ void ExportToPort(uint8_t port,uint8_t module)
 void SampleTemperatureToString(char *cstring, size_t maxLen)
 {
 	float temprature = 0;
-	SampleTemperature(&temprature);
+	GetSample(&temprature);
 	temp=temprature;
 	snprintf(cstring, maxLen, "Temperature: %.2f\r\n", temprature);
 }
@@ -1000,8 +1040,19 @@ Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t Num
 
 }
 
+Module_Status StreamTemperatureToTerminal(uint32_t Numofsamples, uint32_t timeout,uint8_t port)
+{
+	Module_Status status = H09R9_OK;
+	tofMode=STREAM_TO_Terminal;
+	port3 = port ;
+	Numofsamples3=Numofsamples;
+	timeout3=timeout;
+	return status;
+
+}
 Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout)
 {
+
 	return StreamMemsToCLI(period, timeout, SampleTemperatureToString);
 }
 

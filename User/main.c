@@ -25,18 +25,17 @@ int main(void) {
 
 /*-----------------------------------------------------------*/
 int v;
-
 float teqmp;
 HAL_StatusTypeDef d;
 HAL_StatusTypeDef s;
 static const uint8_t TSD305_ADDR = 0x00 << 1;
 extern uint8_t ADC_Adress;
-
 extern int16_t TSenMax_Value, TSenMin_Value;
 int r;
 /* User Task */
 void UserTask(void *argument) {
-	StreamTemperatureToPort(5, 0, 10, 10000);
+//	StreamTemperatureToPort(5, 0, 10, 10000);
+	StreamTemperatureToTerminal(10, 10000, 5);
 	// put your code here, to run repeatedly.
 	while (1) {
 
