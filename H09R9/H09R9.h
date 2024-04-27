@@ -160,6 +160,7 @@ extern void ExecuteMonitor(void);
  |								  APIs							          ||
 /* -----------------------------------------------------------------------
  */
+Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t Numofsamples, uint32_t timeout);
 Module_Status StreamTemperatureToTerminal(uint32_t Numofsamples, uint32_t timeout,uint8_t port);
 Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout);
 Module_Status SampleTemperature(float *temp);

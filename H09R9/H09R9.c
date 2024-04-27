@@ -530,12 +530,11 @@ static Module_Status PollingSleepCLISafe(uint32_t period)
 	vTaskDelay(pdMS_TO_TICKS(lastDelayMS));
 	return H09R9_OK;
 }
-
-static Module_Status StreamMemsToBuf( float *buffer, uint32_t period, uint32_t timeout, SampleMemsToBuffer function)
-
-{
+uint8_t cont ;
+static Module_Status StreamMemsToBuf( float *buffer, uint32_t Numofsamples, uint32_t timeout, SampleMemsToBuffer function)
+ {
 	Module_Status status = H09R9_OK;
-
+	uint32_t period = timeout / Numofsamples;
 	if (period < MIN_MEMS_PERIOD_MS)
 		return H09R9_ERR_WrongParams;
 
@@ -548,7 +547,10 @@ static Module_Status StreamMemsToBuf( float *buffer, uint32_t period, uint32_t t
 	stopStream = false;
 
 	while ((numTimes-- > 0) || (timeout >= MAX_MEMS_TIMEOUT_MS)) {
-		function(buffer);
+		float sample;
+		function(&sample);
+		buffer[cont] = sample;
+		cont++;
 
 		vTaskDelay(pdMS_TO_TICKS(period));
 		if (stopStream) {
@@ -973,10 +975,9 @@ Module_Status SampleTemperature(float *temp) {
 	return status;
 }
 
-void SampleTemperatureBuf(float *buffer)
-{
-//	SampleTemperature(buffer);
-	}
+void SampleTemperatureBuf(float *buffer) {
+	GetSample(buffer);
+}
 
 
 Module_Status SampleTemperatureToPort (uint8_t port,uint8_t module){
@@ -1023,9 +1024,9 @@ void SampleTemperatureToString(char *cstring, size_t maxLen)
 	snprintf(cstring, maxLen, "Temperature: %.2f\r\n", temprature);
 }
 
-Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t period, uint32_t timeout)
+Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t Numofsamples, uint32_t timeout)
 {
-	return StreamMemsToBuf(buffer, period, timeout, SampleTemperatureBuf);
+	return StreamMemsToBuf(buffer, Numofsamples, timeout, SampleTemperatureBuf);
 }
 
 Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout)
