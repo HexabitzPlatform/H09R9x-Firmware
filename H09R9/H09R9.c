@@ -37,6 +37,7 @@ uint8_t port2 ,module2;
 uint32_t Numofsamples2 ,timeout2;
 uint8_t port3 ;
 uint32_t Numofsamples3 ,timeout3;
+uint8_t flag ;
 typedef unsigned char uchar;
 /* Module exported parameters ------------------------------------------------*/
 module_param_t modParam[NUM_MODULE_PARAMS] ={{.paramPtr = NULL, .paramFormat =FMT_FLOAT, .paramName =""}};
@@ -84,13 +85,52 @@ float TC=0,RT=0,k0comp=0,k1comp=0,k2comp=0,k3comp=0,k4comp=0,k0Obj=0,k1Obj=0,k2O
 uint8_t h_TSenMax, l_TSenMax,h_TSenMin,l_TSenMin;
 uint8_t h_TC1, l_TC1,h_TC2,l_TC2;
 uint8_t h_RT1, l_RT1,h_RT2,l_RT2;
+uint8_t cont ;
+float Sample ;
 /* Private function prototypes -----------------------------------------------*/
 
 /* Create CLI commands --------------------------------------------------------*/
+static portBASE_TYPE TSD305SampleCommand(int8_t *pcWriteBuffer,
+		size_t xWriteBufferLen, const int8_t *pcCommandString);
+static portBASE_TYPE TSD305StreamcliCommand(int8_t *pcWriteBuffer,
+		size_t xWriteBufferLen, const int8_t *pcCommandString);
+static portBASE_TYPE TSD305StreamportCommand(int8_t *pcWriteBuffer,
+		size_t xWriteBufferLen, const int8_t *pcCommandString);
+static portBASE_TYPE TSD305SampleportportCommand(int8_t *pcWriteBuffer,
+		size_t xWriteBufferLen, const int8_t *pcCommandString);
 
-
+///*-----------------------------------------------------------*/
+/* CLI command structure : sample */
+const CLI_Command_Definition_t TSD305SampleCommandDefinition = {
+		(const int8_t*) "sample", /* The command string to type. */
+		(const int8_t*) "sample:\r\nTake one sample measurement\r\n\r\n",
+		TSD305SampleCommand, /* The function to run. */
+		0 /* No parameters are expected. */
+};
 /*-----------------------------------------------------------*/
-
+/* CLI command structure : streamtocli */
+const CLI_Command_Definition_t TSD305StreamcliCommandDefinition =
+		{ (const int8_t*) "streamtocli", /* The command string to type. */
+				(const int8_t*) "streamtocli:\r\n Take several samples measurement\r\n\r\n",
+				TSD305StreamcliCommand, /* The function to run. */
+				2 /* Multiple parameters are expected. */
+		};
+///*-----------------------------------------------------------*/
+/* CLI command structure : streamtoport */
+const CLI_Command_Definition_t TSD305StreamportCommandDefinition =
+		{ (const int8_t*) "streamtoport", /* The command string to type. */
+				(const int8_t*) "streamtoport:\r\n export several samples measurementr\n\r\n",
+				TSD305StreamportCommand, /* The function to run. */
+				3 /* No parameters are expected. */
+		};
+///*-----------------------------------------------------------*/
+/* CLI command structure : sampletoport */
+const CLI_Command_Definition_t TSD305SampletoportCommandDefinition =
+		{ (const int8_t*) "sampletoport", /* The command string to type. */
+				(const int8_t*) "sampletoport:\r\n export one samples measurementr\r\n\r\n",
+				TSD305SampleportportCommand, /* The function to run. */
+				1 /* one parameter is expected. */
+		};
 
 /* -----------------------------------------------------------------------
  |						    	 Private Functions						 |
@@ -401,18 +441,17 @@ void Module_Peripheral_Init(void){
 /* --- H09R9 message processing task.
  */
 Module_Status Module_MessagingTask(uint16_t code,uint8_t port,uint8_t src,uint8_t dst,uint8_t shift){
-	Module_Status result =H09R9_OK;
+	  Module_Status result = H09R9_OK;
+	  uint32_t Numofsamples;
+	  uint32_t timeout;
+	  switch (code)
+	  {
 
 
-	switch(code){
 
-		default:
-			result =H09R9_ERR_UnknownMessage;
-			break;
-	}
-	
-	return result;
-}
+	  }
+
+	  return result;}
 /* --- Get the port for a given UART. 
  */
 uint8_t GetPort(UART_HandleTypeDef *huart){
@@ -438,14 +477,18 @@ uint8_t GetPort(UART_HandleTypeDef *huart){
 /* --- Register this module CLI Commands
  */
 void RegisterModuleCLICommands(void){
+	FreeRTOS_CLIRegisterCommand(&TSD305SampleCommandDefinition);
+	FreeRTOS_CLIRegisterCommand(&TSD305StreamcliCommandDefinition);
+	FreeRTOS_CLIRegisterCommand(&TSD305StreamportCommandDefinition);
+	FreeRTOS_CLIRegisterCommand(&TSD305SampletoportCommandDefinition);
 
 }
 
 /*-----------------------------------------------------------*/
-int f;
-extern float teqmp;
-int g,j,l;
-float Sample ;
+
+
+
+
 ///* Module special task function (if needed) */
 void EXGTask(void *argument) {
 
@@ -460,11 +503,11 @@ void EXGTask(void *argument) {
 	/* Infinite loop */
 	for (;;) {
 		/*  */
-		f++;
+
 
 		switch (tofMode) {
 		case SAMPLE_TEM:
-			l++;
+
 			GetSample(&Sample);
 			break;
 		case SAMPLE_TO_PORT:
@@ -476,7 +519,7 @@ void EXGTask(void *argument) {
 			StreamMemsToPort(port2, module2, Numofsamples2, timeout2, ExportToPort);
 			break;
 		case STREAM_TO_Terminal:
-g++;
+
 			StreamMemsToTerminal(Numofsamples3, timeout3,port3, SampleTemperatureToString);
 
 				break;
@@ -505,7 +548,7 @@ g++;
 /* -----------------------------------------------------------------------
  */
 
-static Module_Status PollingSleepCLISafe(uint32_t period)
+static Module_Status PollingSleepCLISafe(uint32_t period, long Numofsamples)
 {
 	const unsigned DELTA_SLEEP_MS = 100; // milliseconds
 	long numDeltaDelay =  period / DELTA_SLEEP_MS;
@@ -515,10 +558,10 @@ static Module_Status PollingSleepCLISafe(uint32_t period)
 		vTaskDelay(pdMS_TO_TICKS(DELTA_SLEEP_MS));
 
 		// Look for ENTER key to stop the stream
-		for (uint8_t chr=0 ; chr<MSG_RX_BUF_SIZE ; chr++)
-		{
-			if (UARTRxBuf[PcPort-1][chr] == '\r') {
-				UARTRxBuf[PcPort-1][chr] = 0;
+		for (uint8_t chr = 0; chr < MSG_RX_BUF_SIZE; chr++) {
+			if (UARTRxBuf[PcPort - 1][chr] == '\r' && Numofsamples > 0) {
+				UARTRxBuf[PcPort - 1][chr] = 0;
+				flag=1;
 				return H09R9_ERR_TERMINATED;
 			}
 		}
@@ -530,7 +573,7 @@ static Module_Status PollingSleepCLISafe(uint32_t period)
 	vTaskDelay(pdMS_TO_TICKS(lastDelayMS));
 	return H09R9_OK;
 }
-uint8_t cont ;
+
 static Module_Status StreamMemsToBuf( float *buffer, uint32_t Numofsamples, uint32_t timeout, SampleMemsToBuffer function)
  {
 	Module_Status status = H09R9_OK;
@@ -591,16 +634,26 @@ static Module_Status StreamMemsToPort(uint8_t port, uint8_t module, uint32_t Num
 	return status;
 }
 
-static Module_Status StreamMemsToCLI(uint32_t period, uint32_t timeout, SampleMemsToString function)
+static Module_Status StreamMemsToCLI(uint32_t Numofsamples, uint32_t timeout, SampleMemsToString function)
 {
 	Module_Status status = H09R9_OK;
 	int8_t *pcOutputString = NULL;
-
+	uint32_t period = timeout / Numofsamples;
 	if (period < MIN_MEMS_PERIOD_MS)
 		return H09R9_ERR_WrongParams;
 
 	// TODO: Check if CLI is enable or not
-
+	for (uint8_t chr = 0; chr < MSG_RX_BUF_SIZE; chr++) {
+			if (UARTRxBuf[PcPort - 1][chr] == '\r' ) {
+				UARTRxBuf[PcPort - 1][chr] = 0;
+			}
+		}
+	if (1 == flag) {
+		flag = 0;
+		static char *pcOKMessage = (int8_t*) "Stop stream !\n\r";
+		writePxITMutex(PcPort, pcOKMessage, strlen(pcOKMessage), 10);
+		return status;
+	}
 	if (period > timeout)
 		timeout = period;
 
@@ -612,8 +665,8 @@ static Module_Status StreamMemsToCLI(uint32_t period, uint32_t timeout, SampleMe
 		function((char *)pcOutputString, 100);
 
 
-		writePxMutex(6, (char *)pcOutputString, strlen((char *)pcOutputString), cmd500ms, HAL_MAX_DELAY);
-		if (PollingSleepCLISafe(period) != H09R9_OK)
+		writePxMutex(PcPort, (char *)pcOutputString, strlen((char *)pcOutputString), cmd500ms, HAL_MAX_DELAY);
+		if (PollingSleepCLISafe(period,Numofsamples) != H09R9_OK)
 			break;
 	}
 
@@ -644,7 +697,7 @@ static Module_Status StreamMemsToTerminal(uint32_t Numofsamples, uint32_t timeou
 
 
 		writePxMutex(Port, (char *)pcOutputString, strlen((char *)pcOutputString), cmd500ms, HAL_MAX_DELAY);
-		if (PollingSleepCLISafe(period) != H09R9_OK)
+		if (PollingSleepCLISafe(period,Numofsamples) != H09R9_OK)
 			break;
 	}
 
@@ -1179,6 +1232,91 @@ static portBASE_TYPE StopStreamCommand(int8_t *pcWriteBuffer, size_t xWriteBuffe
  |								Commands							      |
    -----------------------------------------------------------------------
  */
+
+static portBASE_TYPE TSD305SampleCommand(int8_t *pcWriteBuffer,
+		size_t xWriteBufferLen, const int8_t *pcCommandString) {
+	Module_Status status = H09R9_OK;
+
+	StreamMemsToCLI(1, 100, SampleTemperatureToString);
+//StreamTemperatureToCLI(1, 100);
+	return pdFALSE;
+}
+
+/*-----------------------------------------------------------*/
+
+static portBASE_TYPE TSD305StreamcliCommand(int8_t *pcWriteBuffer,
+		size_t xWriteBufferLen, const int8_t *pcCommandString) {
+	Module_Status status = H09R9_OK;
+
+	uint32_t Numofsamples, pTimeout;
+	static int8_t *pcParameterString1, *pcParameterString2;
+	portBASE_TYPE xParameterStringLength1 = 0, xParameterStringLength2 = 0;
+
+	(void) xWriteBufferLen;
+
+	pcParameterString1 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 1,
+			&xParameterStringLength1);
+	pcParameterString2 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 2,
+			&xParameterStringLength2);
+
+	Numofsamples = atoi(pcParameterString1);
+	pTimeout = atoi(pcParameterString2);
+//	StreamTemperatureToCLI(Numofsamples, pTimeout);
+	StreamMemsToCLI(Numofsamples, pTimeout, SampleTemperatureToString);
+	/* There is no more data to return after this single string, so return pdFALSE. */
+	return pdFALSE;
+}
+
+/*-----------------------------------------------------------*/
+
+static portBASE_TYPE TSD305StreamportCommand(int8_t *pcWriteBuffer,
+		size_t xWriteBufferLen, const int8_t *pcCommandString) {
+	Module_Status status = H09R9_OK;
+
+	uint8_t Port;
+	uint32_t Numofsamples, pTimeout;
+	static int8_t *pcParameterString1, *pcParameterString2, *pcParameterString3;
+	portBASE_TYPE xParameterStringLength1 = 0, xParameterStringLength2 = 0,
+			xParameterStringLength3 = 0;
+
+	(void) xWriteBufferLen;
+
+	pcParameterString1 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 1,
+			&xParameterStringLength1);
+	pcParameterString2 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 2,
+			&xParameterStringLength2);
+	pcParameterString3 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 3,
+			&xParameterStringLength3);
+	Port = atoi(pcParameterString1);
+	Numofsamples = atoi(pcParameterString2);
+	pTimeout = atoi(pcParameterString3);
+	StreamMemsToPort(Port, 0, Numofsamples, pTimeout,ExportToPort);
+
+	/* There is no more data to return after this single string, so return pdFALSE. */
+	return pdFALSE;
+}
+
+/*-----------------------------------------------------------*/
+
+static portBASE_TYPE TSD305SampleportportCommand(int8_t *pcWriteBuffer,
+		size_t xWriteBufferLen, const int8_t *pcCommandString) {
+	Module_Status status = H09R9_OK;
+	uint8_t Port;
+	static int8_t *pcParameterString1;
+	portBASE_TYPE xParameterStringLength1 = 0;
+
+	(void) xWriteBufferLen;
+
+	pcParameterString1 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 1,
+			&xParameterStringLength1);
+
+	Port = atoi(pcParameterString1);
+
+	ExportToPort(Port, 0);
+
+	/* There is no more data to return after this single string, so return pdFALSE. */
+	return pdFALSE;
+}
 
 /*-----------------------------------------------------------*/
 
