@@ -447,7 +447,18 @@ Module_Status Module_MessagingTask(uint16_t code,uint8_t port,uint8_t src,uint8_
 	  switch (code)
 	  {
 
+	  case CODE_H09R9_SAMPLE_TEMP:
+	  				ExportToPort(cMessage[port-1][shift] ,cMessage[port-1][1+shift]);
+	  				break;
+	  			case CODE_H09R9_STREAM_TEMP:
+	  				Numofsamples = ((uint32_t) cMessage[port - 1][2 + shift] ) + ((uint32_t) cMessage[port - 1][3 + shift] << 8) + ((uint32_t) cMessage[port - 1][4 + shift] << 16) + ((uint32_t)cMessage[port - 1][5 + shift] << 24);
+	  				timeout = ((uint32_t) cMessage[port - 1][6 + shift] ) + ((uint32_t) cMessage[port - 1][7 + shift] << 8) + ((uint32_t) cMessage[port - 1][8 + shift] << 16) + ((uint32_t)cMessage[port - 1][9 + shift] << 24);
+	  				StreamTemperatureToPort(cMessage[port-1][shift+1] ,cMessage[port-1][shift], Numofsamples, timeout);
+	  				break;
 
+	  			default:
+	  			result =H09R9_ERR_UnknownMessage;
+	  				break;
 
 	  }
 
