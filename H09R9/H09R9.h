@@ -95,7 +95,7 @@
 #define	USART6_RX_PIN		GPIO_PIN_5
 #define	USART6_TX_PORT		GPIOA
 #define	USART6_RX_PORT		GPIOA
-#define	USART6_AF			GPIO_AF4_USART6
+#define USART6_AF            GPIO_AF3_USART6
 
 
 /* Module-specific Definitions */

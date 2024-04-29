@@ -425,9 +425,9 @@ void Module_Peripheral_Init(void){
 		} else if (GetUart(i) == &huart4) {
 			index_dma[i - 1] = &(DMA1_Channel4->CNDTR);
 		} else if (GetUart(i) == &huart5) {
-			index_dma[i - 1] = &(DMA1_Channel4->CNDTR);
-		} else if (GetUart(i) == &huart6) {
 			index_dma[i - 1] = &(DMA1_Channel5->CNDTR);
+		} else if (GetUart(i) == &huart6) {
+			index_dma[i - 1] = &(DMA1_Channel6->CNDTR);
 		}
 	}
 
@@ -467,17 +467,17 @@ Module_Status Module_MessagingTask(uint16_t code,uint8_t port,uint8_t src,uint8_
  */
 uint8_t GetPort(UART_HandleTypeDef *huart){
 
-	if(huart->Instance == USART6)
+	if(huart->Instance == USART4)
 		return P1;
 	else if(huart->Instance == USART2)
 		return P2;
-	else if(huart->Instance == USART3)
+	else if(huart->Instance == USART6)
 		return P3;
 	else if(huart->Instance == USART1)
 		return P4;
 	else if(huart->Instance == USART5)
 		return P5;
-	else if(huart->Instance == USART4)
+	else if(huart->Instance == USART3)
 		return P6;
 	
 	return 0;
