@@ -24,29 +24,27 @@ int main(void) {
 }
 
 /*-----------------------------------------------------------*/
-int v;
-float teqmp;
-HAL_StatusTypeDef d;
-HAL_StatusTypeDef s;
-static const uint8_t TSD305_ADDR = 0x00 << 1;
-extern uint8_t ADC_Adress;
-extern int16_t TSenMax_Value, TSenMin_Value;
-int r;
-float fr[20];
+float f;
 /* User Task */
 void UserTask(void *argument) {
-//	StreamTemperatureToPort(5, 0, 10, 10000);
-//	StreamTemperatureToTerminal(10, 10000, 5);
-	 StreamTemperatureToBuffer(fr, 19, 10000);
+//	StreamTemperatureToTerminal(10, 10000, 3);
+	uint32_t Numofsamples = 10;
+		uint32_t timeout = 5000;
+		messageParams[0] = 2; // module ID
+		messageParams[1] = 1; // port
+		memcpy(&messageParams[2], &Numofsamples, 4);
+		memcpy(&messageParams[6], &timeout, 4);
+		SendMessageToModule(2, CODE_H08R7_STREAM_PORT, 10);
+
+
 	// put your code here, to run repeatedly.
 	while (1) {
-
-//	SampleTemperatureToPort(5, 0);
-//		ExportToPort(5, 0);
-//		StreamTemperatureToCLI(100,10000);
-//		HAL_UART_Transmit(&huart6, 10, 1, 1000);
-//		SampleTemperature(&teqmp);
-		v++;
+//		messageParams[0] = 2; // module ID
+//		messageParams[1] = 1; // port SendMessageToModule(1,CODE_H08R7_SAMPLE_PORT, 2);
+//		SendMessageToModule(2,CODE_H08R7_SAMPLE_PORT, 2);
+//		SampleTemperatureToPort(3, 0);
+//		SampleTemperature(&f);
+//		SendMessageToModule(2,CODE_PING,0);
 	}
 }
 
