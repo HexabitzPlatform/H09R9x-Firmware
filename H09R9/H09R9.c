@@ -143,6 +143,7 @@ void ExecuteMonitor(void);
 void FLASH_Page_Eras(uint32_t Addr );
 void SampleTemperatureToString(char *cstring, size_t maxLen);
 void SampleTemperatureBuf(float *buffer);
+void ExportToPortmes(uint8_t port,uint8_t module);
 Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t period, uint32_t timeout);
 
 /**
@@ -448,7 +449,7 @@ Module_Status Module_MessagingTask(uint16_t code,uint8_t port,uint8_t src,uint8_
 	  {
 
 	  case CODE_H09R9_SAMPLE_TEMP:
-	  				ExportToPort(cMessage[port-1][shift] ,cMessage[port-1][1+shift]);
+		            ExportToPortmes(cMessage[port-1][shift] ,cMessage[port-1][1+shift]);
 	  				break;
 	  			case CODE_H09R9_STREAM_TEMP:
 	  				Numofsamples = ((uint32_t) cMessage[port - 1][2 + shift] ) + ((uint32_t) cMessage[port - 1][3 + shift] << 8) + ((uint32_t) cMessage[port - 1][4 + shift] << 16) + ((uint32_t)cMessage[port - 1][5 + shift] << 24);
@@ -1052,12 +1053,12 @@ Module_Status SampleTemperatureToPort (uint8_t port,uint8_t module){
 	return status;
 
 }
-void ExportToPort(uint8_t port,uint8_t module)
+void ExportToPortmes(uint8_t port,uint8_t module)
 {
 	float buffer[1];
 	static uint8_t temp[4];
 
-	GetSample(buffer);
+	SampleTemperature(buffer);
 
 
 	if(module == myID){
@@ -1080,6 +1081,31 @@ void ExportToPort(uint8_t port,uint8_t module)
 	}
 }
 
+void ExportToPort(uint8_t port,uint8_t module)
+ {
+	float buffer[1];
+	static uint8_t temp[4];
+
+	GetSample(buffer);
+
+	if (module == myID) {
+
+		temp[0] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 0);
+		temp[1] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 8);
+		temp[2] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 16);
+		temp[3] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 24);
+
+		writePxITMutex(port, (char*) &temp[0], 4 * sizeof(uint8_t), 10);
+	} else {
+		messageParams[0] = port;
+		messageParams[1] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 0);
+		messageParams[2] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 8);
+		messageParams[3] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 16);
+		messageParams[4] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 24);
+
+		SendMessageToModule(module, CODE_PORT_FORWARD, sizeof(float) + 1);
+	}
+}
 void SampleTemperatureToString(char *cstring, size_t maxLen)
 {
 	float temprature = 0;
