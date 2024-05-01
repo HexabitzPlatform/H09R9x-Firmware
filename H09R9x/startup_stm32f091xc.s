@@ -1,6 +1,6 @@
 /*
- BitzOS (BOS) V0.2.9 - Copyright (C) 2017-2023 Hexabitz
- All rights reserved
+ BitzOS (BOS) V0.3.2 - Copyright (C) 2017-2024 Hexabitz
+  All rights reserved
 
  File Name     : startup_stm32f091xc.s
  Description   : STM32F091xC devices vector table for STM32CubeIDE toolchain.

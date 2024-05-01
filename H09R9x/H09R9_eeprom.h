@@ -1,6 +1,6 @@
 /*
- BitzOS (BOS) V0.2.9 - Copyright (C) 2017-2023 Hexabitz
- All rights reserved
+ BitzOS (BOS) V0.3.2 - Copyright (C) 2017-2024 Hexabitz
+  All rights reserved
 
  File Name     : BOS_eeprom.h
  Description   : Header file contains all the functions prototypes for the EEPROM
