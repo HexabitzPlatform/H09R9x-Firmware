@@ -1,5 +1,0 @@
-..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\list.c:79:6:vListInitialise	1
-..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\list.c:104:6:vListInitialiseItem	1
-..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\list.c:116:6:vListInsertEnd	1
-..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\list.c:145:6:vListInsert	3
-..\..\Thirdparty\Middleware\STM32F0xx\FreeRTOS\Source\list.c:212:13:uxListRemove	2

@@ -1,7 +1,0 @@
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_flash_ex.c:693:26:FLASH_OB_RDP_LevelConfig	3
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_flash_ex.c:160:19:HAL_FLASHEx_Erase	8
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_flash_ex.c:239:19:HAL_FLASHEx_Erase_IT	4
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_flash_ex.c:312:19:HAL_FLASHEx_OBErase	4
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_flash_ex.c:361:19:HAL_FLASHEx_OBProgram	26
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_flash_ex.c:412:6:HAL_FLASHEx_OBGetConfig	2
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_flash_ex.c:903:6:FLASH_PageErase	1

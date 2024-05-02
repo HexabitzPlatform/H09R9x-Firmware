@@ -1,9 +1,0 @@
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_dma.c:178:19:HAL_DMA_Init	3
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_dma.c:239:19:HAL_DMA_DeInit	26
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_dma.c:320:19:HAL_DMA_Start	3
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_dma.c:352:19:HAL_DMA_Start_IT	3
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_dma.c:396:19:HAL_DMA_Abort	3
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_dma.c:441:19:HAL_DMA_PollForTransfer	112
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_dma.c:530:6:HAL_DMA_IRQHandler	167
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_dma.c:642:22:HAL_DMA_GetState	1
-..\..\Thirdparty\STM32F0xx_HAL_Driver\Src\stm32f0xx_hal_dma.c:653:10:HAL_DMA_GetError	1
