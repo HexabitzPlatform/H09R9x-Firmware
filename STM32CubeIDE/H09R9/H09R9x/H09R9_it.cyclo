@@ -1,0 +1,14 @@
+../../Thirdparty/CMSIS/STM32F0xx/Include/core_cm0.h:676:22:NVIC_SystemReset	1
+..\..\H09R9x\H09R9_it.c:35:6:SysTick_Handler	1
+..\..\H09R9x\H09R9_it.c:46:6:HardFault_Handler	0
+..\..\H09R9x\H09R9_it.c:66:6:USART1_IRQHandler	1
+..\..\H09R9x\H09R9_it.c:85:6:USART2_IRQHandler	1
+..\..\H09R9x\H09R9_it.c:104:6:USART3_8_IRQHandler	1
+..\..\H09R9x\H09R9_it.c:133:6:DMA1_Ch1_IRQHandler	1
+..\..\H09R9x\H09R9_it.c:145:6:DMA1_Ch2_3_DMA2_Ch1_2_IRQHandler	4
+..\..\H09R9x\H09R9_it.c:164:6:DMA1_Ch4_7_DMA2_Ch3_5_IRQHandler	6
+..\..\H09R9x\H09R9_it.c:186:6:HAL_UART_TxCpltCallback	2
+..\..\H09R9x\H09R9_it.c:200:6:HAL_UART_ErrorCallback	2
+..\..\H09R9x\H09R9_it.c:220:6:HAL_UART_RxCpltCallback	15
+..\..\H09R9x\H09R9_it.c:295:6:vApplicationStackOverflowHook	0
+..\..\H09R9x\H09R9_it.c:317:6:vApplicationMallocFailedHook	0
