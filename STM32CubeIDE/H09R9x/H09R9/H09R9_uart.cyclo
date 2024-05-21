@@ -15,4 +15,3 @@
 ..\..\H09R9\H09R9_uart.c:582:6:SwapUartPins	4
 ..\..\H09R9\H09R9_uart.c:600:12:ReadPortsDir	5
 ..\..\H09R9\H09R9_uart.c:623:12:ReadPortsDirMSG	3
-..\..\H09R9\H09R9_uart.c:640:12:UpdateMyPortsDir	3
