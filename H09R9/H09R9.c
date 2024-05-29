@@ -1072,13 +1072,17 @@ void ExportToPortmes(uint8_t port,uint8_t module)
 
 		writePxITMutex(port, (char*) &temp[0], 4 * sizeof(uint8_t), 10);
 	} else {
+		if (H09R9_OK == status)
+				messageParams[1] = BOS_OK;
+			else
+				messageParams[1] = BOS_ERROR;
 		messageParams[0] = FMT_FLOAT;
-		messageParams[1] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 0);
-		messageParams[2] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 8);
-		messageParams[3] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 16);
-		messageParams[4] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 24);
+		messageParams[2] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 0);
+		messageParams[3] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 8);
+		messageParams[4] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 16);
+		messageParams[5] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 24);
 
-		SendMessageToModule(module, CODE_READ_RESPONSE, sizeof(float) + 1);
+		SendMessageToModule(module, CODE_READ_RESPONSE, sizeof(float) + 2);
 	}
 	tofMode=20;
 
