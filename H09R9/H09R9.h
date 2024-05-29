@@ -1,5 +1,5 @@
 /*
- BitzOS (BOS) V0.3.3 - Copyright (C) 2017-2024 Hexabitz
+ BitzOS (BOS) V0.3.1 - Copyright (C) 2017-2024 Hexabitz
  All rights reserved
  
  File Name     : H09R9.h
@@ -161,10 +161,10 @@ extern void ExecuteMonitor(void);
 /* -----------------------------------------------------------------------
  */
 Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t Numofsamples, uint32_t timeout);
-Module_Status StreamTemperatureToTerminal(uint32_t Numofsamples, uint32_t timeout,uint8_t port);
-Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout);
+Module_Status StreamTemperatureToTerminal(uint8_t port,uint32_t Numofsamples, uint32_t timeout);
+Module_Status StreamTemperatureToPort( uint8_t module,uint8_t port, uint32_t Numofsamples, uint32_t timeout);
 Module_Status SampleTemperature(float *temp);
-Module_Status SampleTemperatureToPort (uint8_t port,uint8_t module);
+Module_Status SampleTemperatureToPort (uint8_t module,uint8_t port);
 void SENSOR_COEFFICIENTS_Init(void);
 Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout);
 

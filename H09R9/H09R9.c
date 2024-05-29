@@ -1,5 +1,5 @@
 /*
- BitzOS (BOS) V0.3.3 - Copyright (C) 2017-2024 Hexabitz
+ BitzOS (BOS) V0.3.1 - Copyright (C) 2017-2024 Hexabitz
  All rights reserved
 
  File Name     : H09R9.c
@@ -448,13 +448,13 @@ Module_Status Module_MessagingTask(uint16_t code,uint8_t port,uint8_t src,uint8_
 	  switch (code)
 	  {
 
-	  case CODE_H09R9_SAMPLE_TEMP:
+	       case CODE_H09R9_SAMPLE_TEMP:
 		            ExportToPortmes(cMessage[port-1][shift] ,cMessage[port-1][1+shift]);
 	  				break;
 	  			case CODE_H09R9_STREAM_TEMP:
 	  				Numofsamples = ((uint32_t) cMessage[port - 1][2 + shift] ) + ((uint32_t) cMessage[port - 1][3 + shift] << 8) + ((uint32_t) cMessage[port - 1][4 + shift] << 16) + ((uint32_t)cMessage[port - 1][5 + shift] << 24);
 	  				timeout = ((uint32_t) cMessage[port - 1][6 + shift] ) + ((uint32_t) cMessage[port - 1][7 + shift] << 8) + ((uint32_t) cMessage[port - 1][8 + shift] << 16) + ((uint32_t)cMessage[port - 1][9 + shift] << 24);
-	  				StreamTemperatureToPort(cMessage[port-1][shift+1] ,cMessage[port-1][shift], Numofsamples, timeout);
+	  				StreamTemperatureToPort(cMessage[port-1][shift] ,cMessage[port-1][shift+1], Numofsamples, timeout);
 	  				break;
 
 	  			default:
@@ -1045,7 +1045,7 @@ void SampleTemperatureBuf(float *buffer) {
 }
 
 
-Module_Status SampleTemperatureToPort (uint8_t port,uint8_t module){
+Module_Status SampleTemperatureToPort (uint8_t module,uint8_t port){
 	Module_Status status = H09R9_OK;
 	tofMode=SAMPLE_TO_PORT;
 	port1 = port;
@@ -1058,6 +1058,8 @@ void ExportToPortmes(uint8_t port,uint8_t module)
 	float buffer[1];
 	static uint8_t temp[4];
 	Module_Status status = H09R9_OK;
+
+
 
 	status = SampleTemperature(buffer);
 
@@ -1078,6 +1080,7 @@ void ExportToPortmes(uint8_t port,uint8_t module)
 
 		SendMessageToModule(module, CODE_READ_RESPONSE, sizeof(float) + 1);
 	}
+	tofMode=20;
 
 }
 
@@ -1119,7 +1122,7 @@ Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t Numofsamples, ui
 	return StreamMemsToBuf(buffer, Numofsamples, timeout, SampleTemperatureBuf);
 }
 
-Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout)
+Module_Status StreamTemperatureToPort( uint8_t module,uint8_t port, uint32_t Numofsamples, uint32_t timeout)
 {
 	Module_Status status = H09R9_OK;
 	tofMode=STREAM_TO_PORT;
@@ -1131,7 +1134,7 @@ Module_Status StreamTemperatureToPort(uint8_t port, uint8_t module, uint32_t Num
 
 }
 
-Module_Status StreamTemperatureToTerminal(uint32_t Numofsamples, uint32_t timeout,uint8_t port)
+Module_Status StreamTemperatureToTerminal(uint8_t port,uint32_t Numofsamples, uint32_t timeout)
 {
 	Module_Status status = H09R9_OK;
 	tofMode=STREAM_TO_Terminal;
