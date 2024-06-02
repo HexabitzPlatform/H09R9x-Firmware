@@ -1,5 +1,5 @@
 /*
- BitzOS (BOS) V0.3.2 - Copyright (C) 2017-2024 Hexabitz
+ BitzOS (BOS) V0.3.4 - Copyright (C) 2017-2024 Hexabitz
  All rights reserved
 
  File Name     : main.c
@@ -35,8 +35,6 @@ void UserTask(void *argument) {
 		memcpy(&messageParams[2], &Numofsamples, 4);
 		memcpy(&messageParams[6], &timeout, 4);
 		SendMessageToModule(2, CODE_H08R7_STREAM_PORT, 10);
-
-
 	// put your code here, to run repeatedly.
 	while (1) {
 //		messageParams[0] = 2; // module ID
