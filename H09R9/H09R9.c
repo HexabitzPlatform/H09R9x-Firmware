@@ -1,5 +1,5 @@
 /*
- BitzOS (BOS) V0.3.4 - Copyright (C) 2017-2024 Hexabitz
+ BitzOS (BOS) V0.3.1 - Copyright (C) 2017-2024 Hexabitz
  All rights reserved
 
  File Name     : H09R9.c
@@ -642,7 +642,7 @@ static Module_Status StreamMemsToPort(uint8_t port, uint8_t module, uint32_t Num
 			break;
 		}
 	}
-	tofMode=20;
+	module1 = DEFAULT;
 	return status;
 }
 
@@ -715,7 +715,7 @@ static Module_Status StreamMemsToTerminal(uint32_t Numofsamples, uint32_t timeou
 
 	memset((char *) pcOutputString, 0, configCOMMAND_INT_MAX_OUTPUT_SIZE);
   sprintf((char *)pcOutputString, "\r\n");
-	tofMode=20;
+	module1 = DEFAULT;
 	return status;
 }
 
@@ -1112,6 +1112,7 @@ void ExportToPort(uint8_t port,uint8_t module)
 
 		SendMessageToModule(module, CODE_PORT_FORWARD, sizeof(float) + 1);
 	}
+	module1 = DEFAULT;
 }
 void SampleTemperatureToString(char *cstring, size_t maxLen)
 {
