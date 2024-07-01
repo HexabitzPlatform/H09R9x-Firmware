@@ -143,7 +143,7 @@ void ExecuteMonitor(void);
 void FLASH_Page_Eras(uint32_t Addr );
 void SampleTemperatureToString(char *cstring, size_t maxLen);
 void SampleTemperatureBuf(float *buffer);
-void ExportToPortmes(uint8_t port,uint8_t module);
+void ExportToPortmes(uint8_t module,uint8_t port);
 Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t period, uint32_t timeout);
 
 /**
@@ -1053,7 +1053,7 @@ Module_Status SampleTemperatureToPort (uint8_t module,uint8_t port){
 	return status;
 
 }
-void ExportToPortmes(uint8_t port,uint8_t module)
+void ExportToPortmes(uint8_t module,uint8_t port)
  {
 	float buffer[1];
 	static uint8_t temp[4];
@@ -1084,7 +1084,7 @@ void ExportToPortmes(uint8_t port,uint8_t module)
 
 		SendMessageToModule(module, CODE_READ_RESPONSE, sizeof(float) + 2);
 	}
-	tofMode=20;
+	module1 = DEFAULT;
 
 }
 
