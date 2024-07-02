@@ -1,5 +1,5 @@
 /*
- BitzOS (BOS) V0.3.4 - Copyright (C) 2017-2024 Hexabitz
+ BitzOS (BOS) V0.3.5 - Copyright (C) 2017-2024 Hexabitz
  All rights reserved
  
  File Name     : H09R9.h
@@ -106,10 +106,12 @@
 #define _IND_LED_PIN		GPIO_PIN_0
 
 #define NUM_MODULE_PARAMS		1
+
 #define SAMPLE_TEM              0
 #define SAMPLE_TO_PORT          1
 #define STREAM_TO_PORT          2
 #define STREAM_TO_Terminal      3
+#define DEFAULT                 4
 /* H09R9 Module Special Timer */
 
 

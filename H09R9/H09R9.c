@@ -1,5 +1,5 @@
 /*
- BitzOS (BOS) V0.3.4 - Copyright (C) 2017-2024 Hexabitz
+ BitzOS (BOS) V0.3.5 - Copyright (C) 2017-2024 Hexabitz
  All rights reserved
 
  File Name     : H09R9.c
@@ -138,12 +138,12 @@ const CLI_Command_Definition_t TSD305SampletoportCommandDefinition =
  */
 static Module_Status StreamMemsToTerminal(uint32_t Numofsamples, uint32_t timeout,uint8_t Port, SampleMemsToString function);
 void GetSample(float *temp);
-static Module_Status StreamMemsToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout, SampleMemsToPort function);
+static Module_Status StreamMemsToPort(uint8_t module, uint8_t port , uint32_t Numofsamples, uint32_t timeout, SampleMemsToPort function);
 void ExecuteMonitor(void);
 void FLASH_Page_Eras(uint32_t Addr );
 void SampleTemperatureToString(char *cstring, size_t maxLen);
 void SampleTemperatureBuf(float *buffer);
-void ExportToPortmes(uint8_t port,uint8_t module);
+void ExportToPortmes(uint8_t module,uint8_t port);
 Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t period, uint32_t timeout);
 
 /**
@@ -454,7 +454,7 @@ Module_Status Module_MessagingTask(uint16_t code,uint8_t port,uint8_t src,uint8_
 	  			case CODE_H09R9_STREAM_TEMP:
 	  				Numofsamples = ((uint32_t) cMessage[port - 1][2 + shift] ) + ((uint32_t) cMessage[port - 1][3 + shift] << 8) + ((uint32_t) cMessage[port - 1][4 + shift] << 16) + ((uint32_t)cMessage[port - 1][5 + shift] << 24);
 	  				timeout = ((uint32_t) cMessage[port - 1][6 + shift] ) + ((uint32_t) cMessage[port - 1][7 + shift] << 8) + ((uint32_t) cMessage[port - 1][8 + shift] << 16) + ((uint32_t)cMessage[port - 1][9 + shift] << 24);
-	  				StreamTemperatureToPort(cMessage[port-1][shift] ,cMessage[port-1][shift+1], Numofsamples, timeout);
+	  				StreamMemsToPort(cMessage[port-1][shift] ,cMessage[port-1][shift+1], Numofsamples, timeout,ExportToPort);
 	  				break;
 
 	  			default:
@@ -616,7 +616,7 @@ static Module_Status StreamMemsToBuf( float *buffer, uint32_t Numofsamples, uint
 	return status;
 }
 
-static Module_Status StreamMemsToPort(uint8_t port, uint8_t module, uint32_t Numofsamples, uint32_t timeout, SampleMemsToPort function)
+static Module_Status StreamMemsToPort(uint8_t module, uint8_t port , uint32_t Numofsamples, uint32_t timeout, SampleMemsToPort function)
 {
 	Module_Status status = H09R9_OK;
 	uint32_t period = timeout / Numofsamples;
@@ -642,7 +642,7 @@ static Module_Status StreamMemsToPort(uint8_t port, uint8_t module, uint32_t Num
 			break;
 		}
 	}
-	tofMode=20;
+	module1 = DEFAULT;
 	return status;
 }
 
@@ -715,7 +715,7 @@ static Module_Status StreamMemsToTerminal(uint32_t Numofsamples, uint32_t timeou
 
 	memset((char *) pcOutputString, 0, configCOMMAND_INT_MAX_OUTPUT_SIZE);
   sprintf((char *)pcOutputString, "\r\n");
-	tofMode=20;
+	module1 = DEFAULT;
 	return status;
 }
 
@@ -1053,7 +1053,7 @@ Module_Status SampleTemperatureToPort (uint8_t module,uint8_t port){
 	return status;
 
 }
-void ExportToPortmes(uint8_t port,uint8_t module)
+void ExportToPortmes(uint8_t module,uint8_t port)
  {
 	float buffer[1];
 	static uint8_t temp[4];
@@ -1084,7 +1084,7 @@ void ExportToPortmes(uint8_t port,uint8_t module)
 
 		SendMessageToModule(module, CODE_READ_RESPONSE, sizeof(float) + 2);
 	}
-	tofMode=20;
+	module1 = DEFAULT;
 
 }
 
@@ -1092,8 +1092,9 @@ void ExportToPort(uint8_t port,uint8_t module)
  {
 	float buffer[1];
 	static uint8_t temp[4];
+	Module_Status status = H09R9_OK;
 
-	GetSample(buffer);
+	status =SampleTemperature(buffer);
 
 	if (module == myID) {
 
@@ -1104,14 +1105,19 @@ void ExportToPort(uint8_t port,uint8_t module)
 
 		writePxITMutex(port, (char*) &temp[0], 4 * sizeof(uint8_t), 10);
 	} else {
-		messageParams[0] = port;
-		messageParams[1] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 0);
-		messageParams[2] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 8);
-		messageParams[3] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 16);
-		messageParams[4] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 24);
+		if (H09R9_OK == status)
+						messageParams[1] = BOS_OK;
+					else
+						messageParams[1] = BOS_ERROR;
+				messageParams[0] = FMT_FLOAT;
+				messageParams[2] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 0);
+				messageParams[3] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 8);
+				messageParams[4] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 16);
+				messageParams[5] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 24);
 
-		SendMessageToModule(module, CODE_PORT_FORWARD, sizeof(float) + 1);
+				SendMessageToModule(module, CODE_READ_RESPONSE, sizeof(float) + 2);
 	}
+	module1 = DEFAULT;
 }
 void SampleTemperatureToString(char *cstring, size_t maxLen)
 {
