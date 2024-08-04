@@ -1,5 +1,5 @@
 /*
- BitzOS (BOS) V0.3.5 - Copyright (C) 2017-2024 Hexabitz
+ BitzOS (BOS) V0.3.6 - Copyright (C) 2017-2024 Hexabitz
  All rights reserved
 
  File Name     : H09R9.c
@@ -642,7 +642,6 @@ static Module_Status StreamMemsToPort(uint8_t module, uint8_t port , uint32_t Nu
 			break;
 		}
 	}
-	module1 = DEFAULT;
 	return status;
 }
 
@@ -1077,14 +1076,14 @@ void ExportToPortmes(uint8_t module,uint8_t port)
 			else
 				messageParams[1] = BOS_ERROR;
 		messageParams[0] = FMT_FLOAT;
-		messageParams[2] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 0);
-		messageParams[3] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 8);
-		messageParams[4] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 16);
-		messageParams[5] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 24);
+		messageParams[2] = 1;
+		messageParams[3] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 0);
+		messageParams[4] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 8);
+		messageParams[5] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 16);
+		messageParams[6] = (uint8_t) ((*(uint32_t*) &buffer[0]) >> 24);
 
-		SendMessageToModule(module, CODE_READ_RESPONSE, sizeof(float) + 2);
+		SendMessageToModule(module, CODE_READ_RESPONSE, sizeof(float) + 3);
 	}
-	module1 = DEFAULT;
 
 }
 
