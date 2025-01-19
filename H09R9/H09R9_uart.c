@@ -306,7 +306,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	else if(huart->Instance == USART4){
 	#ifdef _Usart4
 		/* Peripheral clock enable */
-		__USART4_CLK_ENABLE();
+		__HAL_RCC_USART4_CLK_ENABLE();
 		
 		/* USART4 GPIO Configuration */
 		GPIO_InitStruct.Pin = USART4_TX_PIN;
