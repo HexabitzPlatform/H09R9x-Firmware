@@ -202,7 +202,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	    hdma_usart1_rx.Init.Priority = DMA_PRIORITY_LOW;
 
 
-		msgRxDMA[(GetPort(huart)-1)] = &hdma_usart1_rx;
+		hUartDMA[(GetPort(huart)-1)] = &hdma_usart1_rx;
 
 
 	    HAL_DMA_Init(&hdma_usart1_rx);
@@ -256,7 +256,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	    hdma_usart2_rx.Init.Mode = DMA_CIRCULAR;
 	    hdma_usart2_rx.Init.Priority = DMA_PRIORITY_LOW;
 
-		msgRxDMA[(GetPort(huart)-1)] = &hdma_usart2_rx;
+		hUartDMA[(GetPort(huart)-1)] = &hdma_usart2_rx;
 
 	    HAL_DMA_Init(&hdma_usart2_rx);
 
@@ -309,7 +309,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	    hdma_usart3_rx.Init.Mode = DMA_CIRCULAR;
 	    hdma_usart3_rx.Init.Priority = DMA_PRIORITY_LOW;
 
-		msgRxDMA[(GetPort(huart)-1)] = &hdma_usart3_rx;
+		hUartDMA[(GetPort(huart)-1)] = &hdma_usart3_rx;
 
 
 	    HAL_DMA_Init(&hdma_usart3_rx);
@@ -354,7 +354,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	    hdma_usart4_rx.Init.Mode = DMA_CIRCULAR;
 	    hdma_usart4_rx.Init.Priority = DMA_PRIORITY_LOW;
 
-		msgRxDMA[(GetPort(huart)-1)] = &hdma_usart4_rx;
+		hUartDMA[(GetPort(huart)-1)] = &hdma_usart4_rx;
 
 	    HAL_DMA_Init(&hdma_usart4_rx);
 
@@ -400,7 +400,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	    hdma_usart5_rx.Init.Mode = DMA_CIRCULAR;
 	    hdma_usart5_rx.Init.Priority = DMA_PRIORITY_LOW;
 
-		msgRxDMA[(GetPort(huart)-1)] = &hdma_usart5_rx;
+		hUartDMA[(GetPort(huart)-1)] = &hdma_usart5_rx;
 
 	    HAL_DMA_Init(&hdma_usart5_rx);
 
@@ -447,7 +447,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	    hdma_usart6_rx.Init.Mode = DMA_CIRCULAR;
 	    hdma_usart6_rx.Init.Priority = DMA_PRIORITY_LOW;
 
-		msgRxDMA[(GetPort(huart)-1)] = &hdma_usart6_rx;
+		hUartDMA[(GetPort(huart)-1)] = &hdma_usart6_rx;
 
 	    HAL_DMA_Init(&hdma_usart6_rx);
 
