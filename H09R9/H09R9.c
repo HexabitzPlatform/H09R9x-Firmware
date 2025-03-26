@@ -40,7 +40,6 @@ uint32_t Numofsamples3 ,timeout3;
 uint8_t flag ;
 typedef unsigned char uchar;
 /* Module exported parameters ------------------------------------------------*/
-module_param_t modParam[NUM_MODULE_PARAMS] ={{.paramPtr = NULL, .paramFormat =FMT_FLOAT, .paramName =""}};
 TaskHandle_t EXGTaskHandle = NULL;
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
@@ -87,6 +86,13 @@ uint8_t h_TC1, l_TC1,h_TC2,l_TC2;
 uint8_t h_RT1, l_RT1,h_RT2,l_RT2;
 uint8_t cont ;
 float Sample ;
+/* Global variable for temperature sensor data */
+float H09R9_temp = 0.0f;
+/* Exported Typedef */
+module_param_t modParam[NUM_MODULE_PARAMS] = {
+    { .paramPtr = &H09R9_temp, .paramFormat = FMT_FLOAT, .paramName = "temperature" }
+};
+
 /* Private function prototypes -----------------------------------------------*/
 
 /* Create CLI commands --------------------------------------------------------*/
@@ -506,6 +512,30 @@ uint8_t GetPort(UART_HandleTypeDef *huart){
 		return P6;
 	
 	return 0;
+}
+/***************************************************************************/
+/*
+ * @brief: Samples a module parameter value based on parameter index.
+ * @param paramIndex: Index of the parameter (1-based index).
+ * @param value: Pointer to store the sampled float value.
+ * @retval: Module_Status indicating success or failure.
+ */
+Module_Status GetModuleParameter(uint8_t paramIndex, float *value) {
+    Module_Status status = H09R9_OK;
+
+    switch (paramIndex) {
+        /* Sample temperature in Celsius */
+        case 1:
+            status = SampleTemperature(value);
+            break;
+
+        /* Invalid parameter index */
+        default:
+            status = H09R9_ERR_WrongParams;
+            break;
+    }
+
+    return status;
 }
 
 /*-----------------------------------------------------------*/
