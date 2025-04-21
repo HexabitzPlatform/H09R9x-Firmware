@@ -873,33 +873,33 @@ void SENSOR_COEFFICIENTS_Init(void) {
 
 	uint8_t SensorAddresses;
 
-	HAL_I2C_IsDeviceReady(&hi2c2, TSD305_ADDR, 3, 100);
+	HAL_I2C_IsDeviceReady(I2C_HANDLER, TSD305_ADDR, 3, 100);
 	Delay_ms_no_rtos(TempDelay);
 	/*----------sensor temperature range from TSenMin to TSenMax.---------------*/
 	SensorAddresses = 0x1B;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 	TSenMax_Value = (buf1[1] << 8) + buf1[2];
 	SensorAddresses = 0x1A;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 	TSenMin_Value = (buf2[1] << 8) + buf2[2];
 
 	/*-------------------------Temperature Coefficient---------------------*/
 	SensorAddresses = 0x1E;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_TC1 = buf1[1];
 	l_TC1 = buf1[2];
 
 	SensorAddresses = 0x1F;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_TC2 = buf2[1];
 	l_TC2 = buf2[2];
@@ -908,17 +908,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 
 	/*-------------------------Reference Temperature------------------------------*/
 	SensorAddresses = 0x20;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_RT1 = buf1[1];
 	l_RT1 = buf1[2];
 
 	SensorAddresses = 0x21;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_RT2 = buf2[1];
 	l_RT2 = buf2[2];
@@ -930,17 +930,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 	/*-----------------------1-------------------------------------------------------*/
 //calculate k4comp
 	SensorAddresses = 0x22;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_add1 = buf1[1];
 	l_add1 = buf1[2];
 
 	SensorAddresses = 0x23;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_add2 = buf2[1];
 	l_add2 = buf2[2];
@@ -949,17 +949,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 	/*-----------------------2-------------------------------------------------------*/
 //calculate k3comp
 	SensorAddresses = 0x24;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_add3 = buf1[1];
 	l_add3 = buf1[2];
 
 	SensorAddresses = 0x25;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_add4 = buf2[1];
 	l_add4 = buf2[2];
@@ -968,17 +968,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 	/*-----------------------3-------------------------------------------------------*/
 //calculate k2comp
 	SensorAddresses = 0x26;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_add5 = buf1[1];
 	l_add5 = buf1[2];
 
 	SensorAddresses = 0x27;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_add6 = buf2[1];
 	l_add6 = buf2[2];
@@ -987,17 +987,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 	/*-----------------------4-------------------------------------------------------*/
 //calculate k1comp
 	SensorAddresses = 0x28;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_add7 = buf1[1];
 	l_add7 = buf1[2];
 
 	SensorAddresses = 0x29;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_add8 = buf2[1];
 	l_add8 = buf2[2];
@@ -1006,17 +1006,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 	/*-----------------------5-------------------------------------------------------*/
 //calculate k0comp
 	SensorAddresses = 0x2A;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_add9 = buf1[1];
 	l_add9 = buf1[2];
 
 	SensorAddresses = 0x2B;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_add10 = buf2[1];
 	l_add10 = buf2[2];
@@ -1027,17 +1027,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 	/*-----------------------1-------------------------------------------------------*/
 //calculate k4obj
 	SensorAddresses = 0x2E;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_add11 = buf1[1];
 	l_add11 = buf1[2];
 
 	SensorAddresses = 0x2F;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_add12 = buf2[1];
 	l_add12 = buf2[2];
@@ -1046,17 +1046,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 	/*-----------------------2-------------------------------------------------------*/
 //calculate k3obj
 	SensorAddresses = 0x30;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_add13 = buf1[1];
 	l_add13 = buf1[2];
 
 	SensorAddresses = 0x31;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_add14 = buf2[1];
 	l_add14 = buf2[2];
@@ -1065,17 +1065,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 	/*-----------------------3-------------------------------------------------------*/
 //calculate k2obj
 	SensorAddresses = 0x32;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_add15 = buf1[1];
 	l_add15 = buf1[2];
 
 	SensorAddresses = 0x33;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_add16 = buf2[1];
 	l_add16 = buf2[2];
@@ -1084,17 +1084,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 	/*-----------------------4-------------------------------------------------------*/
 //calculate k1obj
 	SensorAddresses = 0x34;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_add17 = buf1[1];
 	l_add17 = buf1[2];
 
 	SensorAddresses = 0x35;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_add18 = buf2[1];
 	l_add18 = buf2[2];
@@ -1103,17 +1103,17 @@ void SENSOR_COEFFICIENTS_Init(void) {
 	/*-----------------------5-------------------------------------------------------*/
 //calculate k0obj
 	SensorAddresses = 0x36;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf1, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf1, 3, 100);
 
 	h_add19 = buf1[1];
 	l_add19 = buf1[2];
 
 	SensorAddresses = 0x37;
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &SensorAddresses, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &SensorAddresses, 1, 100);
 	Delay_ms_no_rtos(TempDelay);
-	HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf2, 3, 100);
+	HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf2, 3, 100);
 
 	h_add20 = buf2[1];
 	l_add20 = buf2[2];
@@ -1144,13 +1144,13 @@ void GetSample(float *temp) {
 
 	uint8_t ADC_Add = 0xAF;
 
-	HAL_I2C_IsDeviceReady(&hi2c2, TSD305_ADDR, 1, 10);
+	HAL_I2C_IsDeviceReady(I2C_HANDLER, TSD305_ADDR, 1, 10);
 	HAL_Delay(TempDelay);
 
-	HAL_I2C_Master_Transmit(&hi2c2, TSD305_ADDR, &ADC_Add, 1, 100);
+	HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &ADC_Add, 1, 100);
 	HAL_Delay(TempDelay);
 	do {
-		HAL_I2C_Master_Receive(&hi2c2, TSD305_ADDR, buf4, 7, 100);
+		HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf4, 7, 100);
 
 		ADC0 = buf4[0];
 		ADCobj3 = buf4[1];

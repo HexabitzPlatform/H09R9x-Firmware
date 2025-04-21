@@ -69,12 +69,12 @@ void HAL_I2C_MspInit(I2C_HandleTypeDef *i2cHandle) {
 		 PB3     ------> I2C2_SCL
 		 PB4     ------> I2C2_SDA
 		 */
-		GPIO_InitStruct.Pin = GPIO_PIN_3 | GPIO_PIN_4;
+		GPIO_InitStruct.Pin = SENSOR_I2C_SCL_PIN | SENSOR_I2C_SDA_PIN;
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
 		GPIO_InitStruct.Pull = GPIO_NOPULL;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 		GPIO_InitStruct.Alternate = GPIO_AF8_I2C2;
-		HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+		HAL_GPIO_Init(SENSOR_I2C_PORT, &GPIO_InitStruct);
 
 		/* I2C2 clock enable */
 		__HAL_RCC_I2C2_CLK_ENABLE();
@@ -92,9 +92,9 @@ void HAL_I2C_MspDeInit(I2C_HandleTypeDef *i2cHandle) {
 		 PB3     ------> I2C2_SCL
 		 PB4     ------> I2C2_SDA
 		 */
-		HAL_GPIO_DeInit(GPIOB, GPIO_PIN_3);
+		HAL_GPIO_DeInit(SENSOR_I2C_PORT, SENSOR_I2C_SCL_PIN);
 
-		HAL_GPIO_DeInit(GPIOB, GPIO_PIN_4);
+		HAL_GPIO_DeInit(SENSOR_I2C_PORT, SENSOR_I2C_SDA_PIN);
 	}
 }
 

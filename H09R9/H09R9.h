@@ -94,10 +94,14 @@
 #define	USART6_RX_PIN		GPIO_PIN_5
 #define	USART6_TX_PORT		GPIOA
 #define	USART6_RX_PORT		GPIOA
-#define USART6_AF            GPIO_AF3_USART6
+#define USART6_AF           GPIO_AF3_USART6
 
 /* I2C Pin Definition */
+#define SENSOR_I2C_SCL_PIN  GPIO_PIN_3
+#define SENSOR_I2C_SDA_PIN  GPIO_PIN_4
+#define SENSOR_I2C_PORT     GPIOB
 
+#define I2C_HANDLER         &hi2c2
 
 /* Indicator LED */
 #define _IND_LED_PORT		GPIOB
