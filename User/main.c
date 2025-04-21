@@ -28,13 +28,13 @@ float f;
 /* User Task */
 void UserTask(void *argument) {
 //	StreamTemperatureToTerminal(10, 10000, 3);
-	uint32_t Numofsamples = 10;
-		uint32_t timeout = 5000;
-		messageParams[0] = 2; // module ID
-		messageParams[1] = 1; // port
-		memcpy(&messageParams[2], &Numofsamples, 4);
-		memcpy(&messageParams[6], &timeout, 4);
-		SendMessageToModule(2, CODE_H08R7_STREAM_PORT, 10);
+//	uint32_t Numofsamples = 10;
+//		uint32_t timeout = 5000;
+//		messageParams[0] = 2; // module ID
+//		messageParams[1] = 1; // port
+//		memcpy(&messageParams[2], &Numofsamples, 4);
+//		memcpy(&messageParams[6], &timeout, 4);
+//		SendMessageToModule(2, CODE_H08R7_STREAM_PORT, 10);
 	// put your code here, to run repeatedly.
 	while (1) {
 //		messageParams[0] = 2; // module ID
