@@ -109,17 +109,18 @@
 
 /* Module-specific Macro Definitions ***************************************/
 #define TSD305_ADDR             0x00<<1
-
 #define TempDelay               10
 #define NUM_MODULE_PARAMS		1
 
-#define SAMPLE_TEM              0
-#define SAMPLE_TO_PORT          1
-#define STREAM_TO_PORT          2
-#define STREAM_TO_Terminal      3
-#define DEFAULT                 4
-#define MIN_MEMS_PERIOD_MS		100
-#define MAX_MEMS_TIMEOUT_MS		0xFFFFFFFF
+#define SAMPLE_TEM              1
+
+
+/* Macros definitions */
+#define MIN_PERIOD_MS    		 100
+#define MAX_TIMEOUT_MS		     0xFFFFFFFF
+
+#define STREAM_MODE_TO_PORT      1
+#define STREAM_MODE_TO_TERMINAL  2
 
 /* Module-specific Type Definition *****************************************/
 /* Module-status Type Definition */
@@ -160,12 +161,10 @@ extern void SystemClock_Config(void);
 /***************************************************************************/
 Module_Status SampleTemperature(float *temp);
 
-Module_Status SampleTemperatureToPort (uint8_t module,uint8_t port);
-Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout);
-Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t Numofsamples, uint32_t timeout);
-Module_Status StreamTemperatureToTerminal(uint8_t port,uint32_t Numofsamples, uint32_t timeout);
-Module_Status StreamTemperatureToPort( uint8_t module,uint8_t port, uint32_t Numofsamples, uint32_t timeout);
+Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort);
+Module_Status StreamtoPort(uint8_t dstModule,uint8_t dstPort,uint32_t numOfSamples,uint32_t streamTimeout);
+Module_Status StreamToTerminal(uint8_t dstPort,uint32_t numOfSamples,uint32_t streamTimeout);
+Module_Status StreamToBuffer(float *buffer, uint32_t Numofsamples, uint32_t timeout);
 
 #endif /* H09R9_H */
-
 /***************** (C) COPYRIGHT HEXABITZ ***** END OF FILE ****************/
