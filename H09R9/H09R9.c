@@ -97,46 +97,27 @@ void SENSOR_COEFFICIENTS_Init(void);
 void TemperatureTask(void *argument);
 float BytesToFloat(uchar b0, uchar b1, uchar b2, uchar b3);
 
+
 /* Create CLI commands *****************************************************/
-static portBASE_TYPE TSD305SampleCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString);
-static portBASE_TYPE TSD305StreamcliCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString);
-static portBASE_TYPE TSD305StreamportCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString);
-static portBASE_TYPE TSD305SampleportportCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString);
+static portBASE_TYPE SampleSensorCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString);
+static portBASE_TYPE StreamSensorCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString);
 
 /* CLI command structure ***************************************************/
 /* CLI command structure : sample */
-const CLI_Command_Definition_t TSD305SampleCommandDefinition = {
-		(const int8_t*) "sample", /* The command string to type. */
-		(const int8_t*) "sample:\r\nTake one sample measurement\r\n\r\n",
-		TSD305SampleCommand, /* The function to run. */
-0 /* No parameters are expected. */
+const CLI_Command_Definition_t SampleCommandDefinition = {
+    (const int8_t*)"sample",
+    (const int8_t*)"sample:\r\n Syntax: sample [temp].\r\n\r\n",
+    SampleSensorCommand,
+    1
 };
 
 /***************************************************************************/
-/* CLI command structure : streamtocli */
-const CLI_Command_Definition_t TSD305StreamcliCommandDefinition = {
-		(const int8_t*) "streamtocli", /* The command string to type. */
-		(const int8_t*) "streamtocli:\r\n Take several samples measurement\r\n\r\n",
-		TSD305StreamcliCommand, /* The function to run. */
-2 /* Multiple parameters are expected. */
-};
-
-/***************************************************************************/
-/* CLI command structure : streamtoport */
-const CLI_Command_Definition_t TSD305StreamportCommandDefinition = {
-		(const int8_t*) "streamtoport", /* The command string to type. */
-		(const int8_t*) "streamtoport:\r\n export several samples measurementr\n\r\n",
-		TSD305StreamportCommand, /* The function to run. */
-3 /* No parameters are expected. */
-};
-
-/***************************************************************************/
-/* CLI command structure : sampletoport */
-const CLI_Command_Definition_t TSD305SampletoportCommandDefinition = {
-		(const int8_t*) "sampletoport", /* The command string to type. */
-		(const int8_t*) "sampletoport:\r\n export one samples measurementr\r\n\r\n",
-		TSD305SampleportportCommand, /* The function to run. */
-1 /* one parameter is expected. */
+/* CLI command structure : stream */
+const CLI_Command_Definition_t StreamCommandDefinition = {
+    (const int8_t*)"stream",
+    (const int8_t*)"stream:\r\n Syntax: stream [temp] (Numofsamples) (timeout) [port] [module].\r\n\r\n",
+    StreamSensorCommand,
+    -1
 };
 
 /***************************************************************************/
@@ -660,11 +641,9 @@ Module_Status GetModuleParameter(uint8_t paramIndex, float *value) {
 
 /***************************************************************************/
 /* Register this module CLI Commands */
-void RegisterModuleCLICommands(void){
-	FreeRTOS_CLIRegisterCommand(&TSD305SampleCommandDefinition);
-	FreeRTOS_CLIRegisterCommand(&TSD305StreamcliCommandDefinition);
-	FreeRTOS_CLIRegisterCommand(&TSD305StreamportCommandDefinition);
-	FreeRTOS_CLIRegisterCommand(&TSD305SampletoportCommandDefinition);
+void RegisterModuleCLICommands(void) {
+	FreeRTOS_CLIRegisterCommand(&SampleCommandDefinition);
+	FreeRTOS_CLIRegisterCommand(&StreamCommandDefinition);
 }
 
 /***************************************************************************/
@@ -797,30 +776,50 @@ Module_Status SampleToTerminal(uint8_t dstPort) {
  * function: Function pointer to the string formatting function (e.g., SampleTempCToString).
  */
 static Module_Status StreamToCLI(uint32_t Numofsamples, uint32_t timeout, SampleToString function) {
-    Module_Status status = H09R9_OK;
-    uint32_t period = timeout / Numofsamples;
-    char cstring[100] = {0};
+	Module_Status status =H09R9_OK; /* Initialize status to OK */
+	int8_t *pcOutputString = NULL;  /* Pointer to output string */
+	uint32_t period =timeout / Numofsamples; /* Calculate the period for each sample */
 
-    /* Check if the calculated period is valid */
-    if (period < MIN_PERIOD_MS) {
-        return H09R9_ERR_WRONGPARAMS;
-    }
+	/* Check if the calculated period is valid */
+	if(period < MIN_PERIOD_MS)
+		return H09R9_ERR_WRONGPARAMS;
 
-    stopStream = false;
+	/* Check if CLI is enabled */
+	for(uint8_t chr =0; chr < MSG_RX_BUF_SIZE; chr++){
+		if(UARTRxBuf[pcPort - 1][chr] == '\r'){
+			UARTRxBuf[pcPort - 1][chr] =0; /* Null-terminate the buffer */
+		}
+	}
 
-    /* Stream data to CLI */
-    while (Numofsamples-- > 0) {
-        function(cstring, 50);
-        writePxMutex(TerminalPort, cstring, strlen(cstring), cmd500ms, HAL_MAX_DELAY);
+	/* Check if streaming should be stopped */
+	if(1 == StopeCliStreamFlag){
+		StopeCliStreamFlag =0;
+		static char *pcOKMessage =(int8_t* )"Stop stream!\n\r";
+		writePxITMutex(pcPort,pcOKMessage,strlen(pcOKMessage),10);
+		return status;
+	}
 
-        /* Check for termination */
-        status = PollingSleepCLISafe(period, Numofsamples);
-        if (status != H09R9_OK) {
-            break;
-        }
-    }
+	/* Adjust timeout period if necessary */
+	if(period > timeout)
+		timeout =period;
 
-    return status;
+	long numTimes =timeout / period;
+	stopStream = false;
+
+	/* Stream data to CLI */
+	while((numTimes-- > 0) || (timeout >= MAX_TIMEOUT_MS)){
+		pcOutputString =FreeRTOS_CLIGetOutputBuffer(); /* Get output buffer for CLI */
+		function((char* )pcOutputString,100); /* Call the sampling function to get data */
+		writePxMutex(pcPort,(char* )pcOutputString,strlen((char* )pcOutputString),cmd500ms,HAL_MAX_DELAY);
+
+		if(PollingSleepCLISafe(period,Numofsamples) != H09R9_OK)
+			break;
+	}
+
+	memset((char* )pcOutputString,0,configCOMMAND_INT_MAX_OUTPUT_SIZE); /* Clear the output buffer */
+	sprintf((char* )pcOutputString,"\r\n"); /* Add newline to output buffer */
+
+	return status; /* Return the status of the operation */
 }
 /***************************************************************************/
 /* Polling and sleep function to safely manage CLI stream.
@@ -1369,199 +1368,123 @@ Module_Status StreamToBuffer(float *buffer, uint32_t Numofsamples, uint32_t time
 /***************************************************************************/
 /********************************* Commands ********************************/
 /***************************************************************************/
-static portBASE_TYPE SampleSensorCommand(int8_t *pcWriteBuffer,
-		size_t xWriteBufferLen, const int8_t *pcCommandString) {
-	// Make sure we return something
-	*pcWriteBuffer = '\0';
 
-	do {
-		SampleTemperatureToString((char*) pcWriteBuffer, xWriteBufferLen);
+/***************************************************************************/
+static portBASE_TYPE SampleSensorCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString) {
+    const char *const TempCmdName = "temp";
 
-		return pdFALSE;
-	} while (0);
+    const char *pSensName = NULL;
+    portBASE_TYPE sensNameLen = 0;
 
-	snprintf((char*) pcWriteBuffer, xWriteBufferLen,
-			"Error reading Sensor\r\n");
+    // Make sure we return something
+    *pcWriteBuffer = '\0';
 
-	return pdFALSE;
+    pSensName = (const char*)FreeRTOS_CLIGetParameter(pcCommandString, 1, &sensNameLen);
+
+    if (pSensName == NULL) {
+        snprintf((char*)pcWriteBuffer, xWriteBufferLen, "Invalid Arguments\r\n");
+        return pdFALSE;
+    }
+
+    do {
+        if (!strncmp(pSensName, TempCmdName, strlen(TempCmdName))) {
+            SampleToTerminal(pcPort);
+        }
+        else {
+            snprintf((char*)pcWriteBuffer, xWriteBufferLen, "Invalid Arguments\r\n");
+        }
+
+        return pdFALSE;
+    } while (0);
+
+    snprintf((char*)pcWriteBuffer, xWriteBufferLen, "Error reading Sensor\r\n");
+    return pdFALSE;
 }
 
 /***************************************************************************/
 // Port Mode => false and CLI Mode => true
-static bool StreamCommandParser(const int8_t *pcCommandString, bool *pPortOrCLI,
-		uint32_t *pPeriod, uint32_t *pTimeout, uint8_t *pPort, uint8_t *pModule) {
-	const char *pPeriodMSStr = NULL;
-	const char *pTimeoutMSStr = NULL;
+static bool StreamCommandParser(const int8_t *pcCommandString, const char **ppSensName, portBASE_TYPE *pSensNameLen,
+                                bool *pPortOrCLI, uint32_t *pPeriod, uint32_t *pTimeout, uint8_t *pPort, uint8_t *pModule) {
+    const char *pPeriodMSStr = NULL;
+    const char *pTimeoutMSStr = NULL;
 
-	portBASE_TYPE periodStrLen = 0;
-	portBASE_TYPE timeoutStrLen = 0;
+    portBASE_TYPE periodStrLen = 0;
+    portBASE_TYPE timeoutStrLen = 0;
 
-	const char *pPortStr = NULL;
-	const char *pModStr = NULL;
+    const char *pPortStr = NULL;
+    const char *pModStr = NULL;
 
-	portBASE_TYPE portStrLen = 0;
-	portBASE_TYPE modStrLen = 0;
+    portBASE_TYPE portStrLen = 0;
+    portBASE_TYPE modStrLen = 0;
 
-	pPeriodMSStr = (const char*) FreeRTOS_CLIGetParameter(pcCommandString, 1,
-			&periodStrLen);
-	pTimeoutMSStr = (const char*) FreeRTOS_CLIGetParameter(pcCommandString, 2,
-			&timeoutStrLen);
+    *ppSensName = (const char*)FreeRTOS_CLIGetParameter(pcCommandString, 1, pSensNameLen);
+    pPeriodMSStr = (const char*)FreeRTOS_CLIGetParameter(pcCommandString, 2, &periodStrLen);
+    pTimeoutMSStr = (const char*)FreeRTOS_CLIGetParameter(pcCommandString, 3, &timeoutStrLen);
 
-	// At least 3 Parameters are required!
-	if ((pPeriodMSStr == NULL) || (pTimeoutMSStr == NULL))
-		return false;
+    // At least 3 Parameters are required!
+    if ((*ppSensName == NULL) || (pPeriodMSStr == NULL) || (pTimeoutMSStr == NULL))
+        return false;
 
-	// TODO: Check if Period and Timeout are integers or not!
-	*pPeriod = atoi(pPeriodMSStr);
-	*pTimeout = atoi(pTimeoutMSStr);
-	*pPortOrCLI = true;
+    // TODO: Check if Period and Timeout are integers or not!
+    *pPeriod = atoi(pPeriodMSStr);
+    *pTimeout = atoi(pTimeoutMSStr);
+    *pPortOrCLI = true;
 
-	pPortStr = (const char*) FreeRTOS_CLIGetParameter(pcCommandString, 3, &portStrLen);
-	pModStr = (const char*) FreeRTOS_CLIGetParameter(pcCommandString, 4, &modStrLen);
+    pPortStr = (const char*)FreeRTOS_CLIGetParameter(pcCommandString, 4, &portStrLen);
+    pModStr = (const char*)FreeRTOS_CLIGetParameter(pcCommandString, 5, &modStrLen);
 
-	if ((pModStr == NULL) && (pPortStr == NULL))
-		return true;
-	if ((pModStr == NULL) || (pPortStr == NULL))// If user has provided 4 Arguments.
-		return false;
+    if ((pModStr == NULL) && (pPortStr == NULL))
+        return true;
+    if ((pModStr == NULL) || (pPortStr == NULL)) // If user has provided 4 Arguments.
+        return false;
 
-	*pPort = atoi(pPortStr);
-	*pModule = atoi(pModStr);
-	*pPortOrCLI = false;
+    *pPort = atoi(pPortStr);
+    *pModule = atoi(pModStr);
+    *pPortOrCLI = false;
 
-	return true;
+    return true;
 }
 
 /***************************************************************************/
 static portBASE_TYPE StreamSensorCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString) {
+    const char *const TempCmdName = "temp";
 
-	uint32_t period = 0;
-	uint32_t timeout = 0;
-	uint8_t port = 0;
-	uint8_t module = 0;
+    uint32_t Numofsamples = 0;
+    uint32_t timeout = 0;
+    uint8_t port = 0;
+    uint8_t module = 0;
 
-	bool portOrCLI = true; // Port Mode => false and CLI Mode => true
+    bool portOrCLI = true; // Port Mode => false and CLI Mode => true
 
-	const char *pSensName = NULL;
-	portBASE_TYPE sensNameLen = 0;
+    const char *pSensName = NULL;
+    portBASE_TYPE sensNameLen = 0;
 
-	// Make sure we return something
-	*pcWriteBuffer = '\0';
+    // Make sure we return something
+    *pcWriteBuffer = '\0';
 
-	if (!StreamCommandParser(pcCommandString, &portOrCLI, &period, &timeout,
-			&port, &module)) {
-		snprintf((char*) pcWriteBuffer, xWriteBufferLen,
-				"Invalid Arguments\r\n");
-		return pdFALSE;
-	}
+    if (!StreamCommandParser(pcCommandString, &pSensName, &sensNameLen, &portOrCLI, &Numofsamples, &timeout, &port, &module)) {
+        snprintf((char*)pcWriteBuffer, xWriteBufferLen, "Invalid Arguments\r\n");
+        return pdFALSE;
+    }
 
-	do {
-		if (portOrCLI)
-			StreamToCLI(period, timeout, SampleTemperatureToString);
-		else
-			StreamtoPort(port, module, period, timeout);
+    do {
+        if (!strncmp(pSensName, TempCmdName, strlen(TempCmdName))) {
+            if (portOrCLI) {
+                StreamToCLI(Numofsamples, timeout, SampleTemperatureToString);
+            } else {
+                StreamtoPort(module, port, Numofsamples, timeout);
+            }
+        }
+        else {
+            snprintf((char*)pcWriteBuffer, xWriteBufferLen, "Invalid Arguments\r\n");
+        }
 
-		snprintf((char*) pcWriteBuffer, xWriteBufferLen, "\r\n");
-		return pdFALSE;
-	} while (0);
+        snprintf((char*)pcWriteBuffer, xWriteBufferLen, "\r\n");
+        return pdFALSE;
+    } while (0);
 
-	snprintf((char*) pcWriteBuffer, xWriteBufferLen,
-			"Error reading Sensor\r\n");
-
-	return pdFALSE;
-}
-
-/***************************************************************************/
-static portBASE_TYPE StopStreamCommand(int8_t *pcWriteBuffer, size_t xWriteBufferLen, const int8_t *pcCommandString)
-{
-	// Make sure we return something
-	pcWriteBuffer[0] = '\0';
-	snprintf((char *)pcWriteBuffer, xWriteBufferLen, "Stopping Streaming MEMS...\r\n");
-
-	stopStreamMems();
-	return pdFALSE;
-}
-
-/***************************************************************************/
-static portBASE_TYPE TSD305SampleCommand(int8_t *pcWriteBuffer,
-		size_t xWriteBufferLen, const int8_t *pcCommandString) {
-	Module_Status status = H09R9_OK;
-
-	StreamToCLI(1, 100, SampleTemperatureToString);
-//StreamTemperatureToCLI(1, 100);
-	return pdFALSE;
-}
-
-/***************************************************************************/
-static portBASE_TYPE TSD305StreamcliCommand(int8_t *pcWriteBuffer,
-		size_t xWriteBufferLen, const int8_t *pcCommandString) {
-	Module_Status status = H09R9_OK;
-
-	uint32_t Numofsamples, pTimeout;
-	static int8_t *pcParameterString1, *pcParameterString2;
-	portBASE_TYPE xParameterStringLength1 = 0, xParameterStringLength2 = 0;
-
-	(void) xWriteBufferLen;
-
-	pcParameterString1 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 1,
-			&xParameterStringLength1);
-	pcParameterString2 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 2,
-			&xParameterStringLength2);
-
-	Numofsamples = atoi(pcParameterString1);
-	pTimeout = atoi(pcParameterString2);
-//	StreamTemperatureToCLI(Numofsamples, pTimeout);
-	StreamToCLI(Numofsamples, pTimeout, SampleTemperatureToString);
-	/* There is no more data to return after this single string, so return pdFALSE. */
-	return pdFALSE;
-}
-
-/***************************************************************************/
-static portBASE_TYPE TSD305StreamportCommand(int8_t *pcWriteBuffer,
-		size_t xWriteBufferLen, const int8_t *pcCommandString) {
-	Module_Status status = H09R9_OK;
-
-	uint8_t Port;
-	uint32_t Numofsamples, pTimeout;
-	static int8_t *pcParameterString1, *pcParameterString2, *pcParameterString3;
-	portBASE_TYPE xParameterStringLength1 = 0, xParameterStringLength2 = 0,
-			xParameterStringLength3 = 0;
-
-	(void) xWriteBufferLen;
-
-	pcParameterString1 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 1,
-			&xParameterStringLength1);
-	pcParameterString2 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 2,
-			&xParameterStringLength2);
-	pcParameterString3 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 3,
-			&xParameterStringLength3);
-	Port = atoi(pcParameterString1);
-	Numofsamples = atoi(pcParameterString2);
-	pTimeout = atoi(pcParameterString3);
-	StreamtoPort(Port, 0, Numofsamples, pTimeout);
-
-	/* There is no more data to return after this single string, so return pdFALSE. */
-	return pdFALSE;
-}
-
-/***************************************************************************/
-static portBASE_TYPE TSD305SampleportportCommand(int8_t *pcWriteBuffer,
-		size_t xWriteBufferLen, const int8_t *pcCommandString) {
-	Module_Status status = H09R9_OK;
-	uint8_t Port;
-	static int8_t *pcParameterString1;
-	portBASE_TYPE xParameterStringLength1 = 0;
-
-	(void) xWriteBufferLen;
-
-	pcParameterString1 = (int8_t*) FreeRTOS_CLIGetParameter(pcCommandString, 1,
-			&xParameterStringLength1);
-
-	Port = atoi(pcParameterString1);
-
-	SampleToPort(Port, 0);
-
-	/* There is no more data to return after this single string, so return pdFALSE. */
-	return pdFALSE;
+    snprintf((char*)pcWriteBuffer, xWriteBufferLen, "Error reading Sensor\r\n");
+    return pdFALSE;
 }
 
 /***************************************************************************/

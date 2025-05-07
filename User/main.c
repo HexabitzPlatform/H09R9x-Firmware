@@ -24,14 +24,33 @@ int main(void) {
 }
 
 /*-----------------------------------------------------------*/
-
+extern UART_HandleTypeDef huart4;
+/*-----------------------------------------------------------*/
+float adcalue,adcalue4,adcalue2,adcalu3;
+uint8_t k[100];
+uint8_t f ;
 /* User Task */
-void UserTask(void *argument) {
-	StreamToTerminal(3, 10, 10000);
-	// put your code here, to run repeatedly.
-	while (1) {
+void UserTask(void *argument){
+
+  // put your code here, to run repeatedly.
+
+
+		while (1) {
+			if (f == 2) {
+						Bridge(P1, P6);
+				Bridge(P2, P3);
+				Bridge(P4, P5);
+				f = 0;
+			}
+			if (f == 1) {
+				Unbridge(P1, P6);
+				Unbridge(P2, P3);
+				Unbridge(P4, P5);
+				f = 0;
+			}
+		}
 
 	}
-}
 
+/*-----------------------------------------------------------*/
 /*-----------------------------------------------------------*/
