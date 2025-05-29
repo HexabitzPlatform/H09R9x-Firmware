@@ -576,18 +576,6 @@ Module_Status Module_MessagingTask(uint16_t code, uint8_t port, uint8_t src, uin
 				cMessage[port - 1][1 + shift]);
 		break;
 
-	case CODE_H09R9_STREAM_TEMP:
-		Numofsamples = ((uint32_t) cMessage[port - 1][2 + shift])
-				+ ((uint32_t) cMessage[port - 1][3 + shift] << 8)
-				+ ((uint32_t) cMessage[port - 1][4 + shift] << 16)
-				+ ((uint32_t) cMessage[port - 1][5 + shift] << 24);
-		timeout = ((uint32_t) cMessage[port - 1][6 + shift])
-				+ ((uint32_t) cMessage[port - 1][7 + shift] << 8)
-				+ ((uint32_t) cMessage[port - 1][8 + shift] << 16)
-				+ ((uint32_t) cMessage[port - 1][9 + shift] << 24);
-		StreamtoPort(cMessage[port - 1][shift], cMessage[port - 1][shift + 1], Numofsamples, timeout);
-		break;
-
 	default:
 		result = H09R9_ERR_UNKNOWNMESSAGE;
 		break;
@@ -1217,9 +1205,11 @@ Module_Status SampleTemperature(float *temp) {
 }
 
 /***************************************************************************/
-/* Samples temperature data and exports it to a specified port.
- * dstModule: The module number to export data from.
- * dstPort: The port number to export data to.
+/*
+ * @brief: Samples temperature data and exports it to a specified port.
+ * @param dstModule: The module number to export data from.
+ * @param dstPort: The port number to export data to.
+ * @retval: Module status indicating success or failure of the operation.
  */
 Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort) {
     Module_Status Status = H09R9_OK;
@@ -1236,25 +1226,27 @@ Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort) {
         return H09R9_ERROR;
     }
 
-    if (dstModule == myID || dstModule == 0) {
+    if (dstModule == myID) {
         /* LSB first */
-        Temp[0] = (uint8_t)((*(uint32_t*)&temperature) >> 0);
-        Temp[1] = (uint8_t)((*(uint32_t*)&temperature) >> 8);
-        Temp[2] = (uint8_t)((*(uint32_t*)&temperature) >> 16);
-        Temp[3] = (uint8_t)((*(uint32_t*)&temperature) >> 24);
+        Temp[0] = (uint8_t)(*(uint32_t*)&temperature);         /* Temperature byte 0 */
+        Temp[1] = (uint8_t)((*(uint32_t*)&temperature) >> 8);  /* Temperature byte 1 */
+        Temp[2] = (uint8_t)((*(uint32_t*)&temperature) >> 16); /* Temperature byte 2 */
+        Temp[3] = (uint8_t)((*(uint32_t*)&temperature) >> 24); /* Temperature byte 3 */
 
         writePxITMutex(dstPort, (char*)&Temp[0], 4 * sizeof(uint8_t), 10);
     } else {
         /* LSB first */
-        MessageParams[1] = (H09R9_OK == Status) ? BOS_OK : BOS_ERROR;
-        MessageParams[0] = FMT_FLOAT;
-        MessageParams[2] = 1;
-        MessageParams[3] = (uint8_t)((*(uint32_t*)&temperature) >> 0);
-        MessageParams[4] = (uint8_t)((*(uint32_t*)&temperature) >> 8);
-        MessageParams[5] = (uint8_t)((*(uint32_t*)&temperature) >> 16);
-        MessageParams[6] = (uint8_t)((*(uint32_t*)&temperature) >> 24);
+        MessageParams[0] = FMT_FLOAT;                                    /* Data format: float */
+        MessageParams[1] = (H09R9_OK == Status) ? BOS_OK : BOS_ERROR;   /* Operation status */
+        MessageParams[2] = 1;                                           /* Number of elements (temperature) */
+        MessageParams[3] = (uint8_t)(CODE_H09R9_SAMPLE_TEMP);           /* Command code LSB */
+        MessageParams[4] = (uint8_t)(CODE_H09R9_SAMPLE_TEMP >> 8);      /* Command code MSB */
+        MessageParams[5] = (uint8_t)(*(uint32_t*)&temperature);         /* Temperature byte 0 */
+        MessageParams[6] = (uint8_t)((*(uint32_t*)&temperature) >> 8);  /* Temperature byte 1 */
+        MessageParams[7] = (uint8_t)((*(uint32_t*)&temperature) >> 16); /* Temperature byte 2 */
+        MessageParams[8] = (uint8_t)((*(uint32_t*)&temperature) >> 24); /* Temperature byte 3 */
 
-        SendMessageToModule(dstModule, CODE_READ_RESPONSE, (sizeof(float) * 1) + 3);
+        SendMessageToModule(dstModule, CODE_READ_RESPONSE, (sizeof(float) * 1) + 5);
     }
 
     /* Clear the temp buffer */
@@ -1262,6 +1254,7 @@ Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort) {
 
     return Status;
 }
+
 /***************************************************************************/
 /*
  * brief: Streams temperature data to the specified port and module with a given number of samples.
