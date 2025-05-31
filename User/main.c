@@ -24,26 +24,33 @@ int main(void) {
 }
 
 /*-----------------------------------------------------------*/
-float f;
+extern UART_HandleTypeDef huart4;
+/*-----------------------------------------------------------*/
+float adcalue,adcalue4,adcalue2,adcalu3;
+uint8_t k[100];
+uint8_t f ;
 /* User Task */
-void UserTask(void *argument) {
-//	StreamTemperatureToTerminal(10, 10000, 3);
-	uint32_t Numofsamples = 10;
-		uint32_t timeout = 5000;
-		messageParams[0] = 2; // module ID
-		messageParams[1] = 1; // port
-		memcpy(&messageParams[2], &Numofsamples, 4);
-		memcpy(&messageParams[6], &timeout, 4);
-		SendMessageToModule(2, CODE_H08R7_STREAM_PORT, 10);
-	// put your code here, to run repeatedly.
-	while (1) {
-//		messageParams[0] = 2; // module ID
-//		messageParams[1] = 1; // port SendMessageToModule(1,CODE_H08R7_SAMPLE_PORT, 2);
-//		SendMessageToModule(2,CODE_H08R7_SAMPLE_PORT, 2);
-//		SampleTemperatureToPort(3, 0);
-//		SampleTemperature(&f);
-//		SendMessageToModule(2,CODE_PING,0);
-	}
-}
+void UserTask(void *argument){
 
+  // put your code here, to run repeatedly.
+
+
+		while (1) {
+			if (f == 2) {
+						Bridge(P1, P6);
+				Bridge(P2, P3);
+				Bridge(P4, P5);
+				f = 0;
+			}
+			if (f == 1) {
+				Unbridge(P1, P6);
+				Unbridge(P2, P3);
+				Unbridge(P4, P5);
+				f = 0;
+			}
+		}
+
+	}
+
+/*-----------------------------------------------------------*/
 /*-----------------------------------------------------------*/
