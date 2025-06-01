@@ -1,5 +1,5 @@
 /*
- BitzOS (BOS) V0.3.6 - Copyright (C) 2017-2024 Hexabitz
+ BitzOS (BOS) V0.4.0 - Copyright (C) 2017-2025 Hexabitz
  All rights reserved
  
  File Name     : H09R9.h
@@ -13,11 +13,11 @@
 
  */
 
-/* Define to prevent recursive inclusion -------------------------------------*/
+/* Define to prevent recursive inclusion ***********************************/
 #ifndef H09R9_H
 #define H09R9_H
 
-/* Includes ------------------------------------------------------------------*/
+/* Includes ****************************************************************/
 #include "BOS.h"
 #include "H09R9_MemoryMap.h"
 #include "H09R9_uart.h"
@@ -26,40 +26,39 @@
 #include "H09R9_inputs.h"
 #include "H09R9_eeprom.h"
 #include "H09R9_i2c.h"
-/* Exported definitions -------------------------------------------------------*/
 
-#define	modulePN		_H09R9
+/* Exported Macros *********************************************************/
+#define	MODULE_PN		_H09R9
 
+/* Port-related Definitions */
+#define	NUM_OF_PORTS	6
+#define P_PROG 			P2		/* ST factory bootloader UART */
 
-/* Port-related definitions */
-#define	NumOfPorts			6
-
-#define P_PROG 				P2						/* ST factory bootloader UART */
-
-/* Define available ports */
-#define _P1 
-#define _P2 
-#define _P3 
-#define _P4 
-#define _P5 
+/* Define Available Ports */
+#define _P1
+#define _P2
+#define _P3
+#define _P4
+#define _P5
 #define _P6
 
-/* Define available USARTs */
-#define _Usart1 1
-#define _Usart2 1
-#define _Usart3 1
-#define _Usart4 1
-#define _Usart5 1
-#define _Usart6 1
+/* Define Available USARTs */
+#define _USART1
+#define _USART2
+#define _USART3
+#define _USART4
+#define _USART5
+#define _USART6
 
 /* Port-UART mapping */
-#define P1uart &huart4
-#define P2uart &huart2
-#define P3uart &huart6
-#define P4uart &huart1
-#define P5uart &huart5
-#define P6uart &huart3
+#define UART_P1 &huart4
+#define UART_P2 &huart2
+#define UART_P3 &huart6
+#define UART_P4 &huart1
+#define UART_P5 &huart5
+#define UART_P6 &huart3
 
+/* Module-specific Hardware Definitions ************************************/
 /* Port Definitions */
 #define	USART1_TX_PIN		GPIO_PIN_9
 #define	USART1_RX_PIN		GPIO_PIN_10
@@ -95,50 +94,50 @@
 #define	USART6_RX_PIN		GPIO_PIN_5
 #define	USART6_TX_PORT		GPIOA
 #define	USART6_RX_PORT		GPIOA
-#define USART6_AF            GPIO_AF3_USART6
+#define USART6_AF           GPIO_AF3_USART6
 
+/* I2C Pin Definition */
+#define SENSOR_I2C_SCL_PIN  GPIO_PIN_3
+#define SENSOR_I2C_SDA_PIN  GPIO_PIN_4
+#define SENSOR_I2C_PORT     GPIOB
 
-/* Module-specific Definitions */
-#define MIN_MEMS_PERIOD_MS				100
-#define MAX_MEMS_TIMEOUT_MS				0xFFFFFFFF
+#define I2C_HANDLER         &hi2c2
+
 /* Indicator LED */
 #define _IND_LED_PORT		GPIOB
 #define _IND_LED_PIN		GPIO_PIN_0
 
+/* Module-specific Macro Definitions ***************************************/
+#define TSD305_ADDR             0x00<<1
+#define TempDelay               10
 #define NUM_MODULE_PARAMS		1
 
-#define SAMPLE_TEM              0
-#define SAMPLE_TO_PORT          1
-#define STREAM_TO_PORT          2
-#define STREAM_TO_Terminal      3
-#define DEFAULT                 4
-/* H09R9 Module Special Timer */
+#define SAMPLE_TEM              1
 
 
-/* H09R9 Module Special ADC */
+/* Macros definitions */
+#define MIN_PERIOD_MS    		 100
+#define MAX_TIMEOUT_MS		     0xFFFFFFFF
 
+#define STREAM_MODE_TO_PORT      1
+#define STREAM_MODE_TO_TERMINAL  2
 
-/* H09R9 Module special parameters */
-typedef enum
-{
-  H09R9_OK = 0,
-  H09R9_ERR_UnknownMessage,
-  H09R9_ERR_TEMPRATURE,
-  H09R9_ERR_BUSY,
-  H09R9_ERR_TIMEOUT,
-  H09R9_ERR_IO,
-  H09R9_ERR_TERMINATED,
-  H09R9_ERR_WrongParams,
-  H09R9_ERROR = 25
+/* Module-specific Type Definition *****************************************/
+/* Module-status Type Definition */
+typedef enum {
+	H09R9_OK = 0,
+	H09R9_ERR_UNKNOWNMESSAGE,
+	H09R9_ERR_TEMPRATURE,
+	H09R9_ERR_BUSY,
+	H09R9_ERR_TIMEOUT,
+	H09R9_ERR_IO,
+	H09R9_ERR_TERMINATED,
+	H09R9_ERR_WRONGPARAMS,
+	H09R9_ERROR = 25
 } Module_Status;
 
-/* Module EEPROM Variables */
-// Module Addressing Space 500 - 599
-#define _EE_MODULE							500		
-
-/* EXG Module_Status Type Definition */
+/* */
 typedef unsigned char uchar;
-
 
 /* Export UART variables */
 extern UART_HandleTypeDef huart1;
@@ -156,27 +155,16 @@ extern void MX_USART4_UART_Init(void);
 extern void MX_USART5_UART_Init(void);
 extern void MX_USART6_UART_Init(void);
 extern void SystemClock_Config(void);
-extern void ExecuteMonitor(void);
 
-/* -----------------------------------------------------------------------
- |								  APIs							          ||
-/* -----------------------------------------------------------------------
- */
-Module_Status StreamTemperatureToBuffer(float *buffer, uint32_t Numofsamples, uint32_t timeout);
-Module_Status StreamTemperatureToTerminal(uint8_t port,uint32_t Numofsamples, uint32_t timeout);
-Module_Status StreamTemperatureToPort( uint8_t module,uint8_t port, uint32_t Numofsamples, uint32_t timeout);
+/***************************************************************************/
+/***************************** General Functions ***************************/
+/***************************************************************************/
 Module_Status SampleTemperature(float *temp);
-Module_Status SampleTemperatureToPort (uint8_t module,uint8_t port);
-void SENSOR_COEFFICIENTS_Init(void);
-Module_Status StreamTemperatureToCLI(uint32_t period, uint32_t timeout);
 
-
-/* -----------------------------------------------------------------------
- |								Commands							      ||
-/* -----------------------------------------------------------------------
- */
-
+Module_Status SampleToPort(uint8_t dstModule, uint8_t dstPort);
+Module_Status StreamtoPort(uint8_t dstModule,uint8_t dstPort,uint32_t numOfSamples,uint32_t streamTimeout);
+Module_Status StreamToTerminal(uint8_t dstPort,uint32_t numOfSamples,uint32_t streamTimeout);
+Module_Status StreamToBuffer(float *buffer, uint32_t Numofsamples, uint32_t timeout);
 
 #endif /* H09R9_H */
-
-/************************ (C) COPYRIGHT HEXABITZ *****END OF FILE****/
+/***************** (C) COPYRIGHT HEXABITZ ***** END OF FILE ****************/
