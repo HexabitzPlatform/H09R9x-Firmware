@@ -2,16 +2,10 @@
  BitzOS (BOS) V0.3.6 - Copyright (C) 2017-2024 Hexabitz
  All rights reserved
 
- File Name     : H09R9.c
- Description   : Source code for module H09R9.
- 	 	 	 	 (Description_of_module)
-
-(Description of Special module peripheral configuration):
->>
->>
->>
-
- */
+ File Name  : H09R9.c
+ Description: Source code for H09R9 module, implementing a temperature sensor (TSD305).
+ Module: Manages TSD305 sensor for temperature measurement with polynomial compensation.
+*/
 
 /* Includes ------------------------------------------------------------------*/
 #include "BOS.h"

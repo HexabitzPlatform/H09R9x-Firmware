@@ -1,17 +1,11 @@
 /*
  BitzOS (BOS) V0.4.0 - Copyright (C) 2017-2025 Hexabitz
  All rights reserved
- 
- File Name     : H09R9.h
- Description   : Header file for module H09R9.
- 	 	 	 	 (Description_of_module)
 
-(Description of Special module peripheral configuration):
->>
->>
->>
-
- */
+ File Name  : H09R9.h
+ Description: Header file for H09R9 module, supporting a temperature sensor (TSD305).
+ Module: Declares functions, macros, and types for TSD305 temperature measurement.
+*/
 
 /* Define to prevent recursive inclusion ***********************************/
 #ifndef H09R9_H
