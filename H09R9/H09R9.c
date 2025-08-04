@@ -631,8 +631,17 @@ void RegisterModuleCLICommands(void) {
 /***************************************************************************/
 /* Module special task function (if needed) */
 void TemperatureTask(void *argument) {
+	UBaseType_t TaskPriority;
+
+	/* Increase the priority of current running task */
+	TaskPriority =uxTaskPriorityGet( NULL);
+	vTaskPrioritySet( NULL,osPriorityHigh - osPriorityIdle);
+
 
 	SENSOR_COEFFICIENTS_Init();
+
+	/* Restore the original task priority */
+	vTaskPrioritySet( NULL,TaskPriority);
 
 	while (0 == TSenMax_Value) {
 		IND_ON();
@@ -1111,10 +1120,14 @@ void GetSample(float *temp) {
     HAL_Delay(TempDelay);
 
     // Read ADC data
+    taskENTER_CRITICAL();
     HAL_I2C_Master_Transmit(I2C_HANDLER, TSD305_ADDR, &ADC_Add, 1, 100);
+    taskEXIT_CRITICAL();
     HAL_Delay(TempDelay);
     do {
+    	taskENTER_CRITICAL();
         HAL_I2C_Master_Receive(I2C_HANDLER, TSD305_ADDR, buf4, 7, 100);
+        taskEXIT_CRITICAL();
         ADC0 = buf4[0]; // Status byte
         ADCobj3 = buf4[1]; // Object ADC high byte
         ADCobj2 = buf4[2]; // Object ADC middle byte
